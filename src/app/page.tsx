@@ -450,8 +450,8 @@ export default function MarineHome() {
                     : tn.kind === "at_low"
                       ? t("🌊 الحين جزر", "🌊 Low tide now")
                       : tn.kind === "rising"
-                        ? t("⬆️ الماي ياخذ (طالع)", "⬆️ Water taking (rising)")
-                        : t("⬇️ الماي يعطي (نازل)", "⬇️ Water giving (falling)")}
+                        ? t("⬆️ صعود الماء", "⬆️ Water rising")
+                        : t("⬇️ نزول الماء", "⬇️ Water falling")}
                   <div className="mt-0.5 text-xs font-normal text-ink-2">
                     {tn.kind === "at_high" || tn.kind === "at_low"
                       ? t(`ذروته ${fmtTime(tn.turn.t, lang)}${tn.next ? ` · بعده ${tn.next.type === "high" ? "مد" : "جزر"} ${fmtTime(tn.next.t, lang)}` : ""}`, `Peak ${fmtTime(tn.turn.t, lang)}`)

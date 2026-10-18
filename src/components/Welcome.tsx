@@ -77,7 +77,7 @@ export function Welcome() {
       icon: "🌊",
       title: t("المد والجزر والحمل والفساد", "Tide, haml and fasad"),
       lines: [
-        t("الماي ياخذ = المد طالع. الماي يعطي = الجزر نازل.", "Water takes = tide rising. Water gives = tide falling."),
+        t("صعود الماء = المد طالع. نزول الماء = الجزر نازل.", "Water rising = tide coming in. Water falling = tide going out."),
         t("الحمل: أيام المد القوي والتيار، والفساد: أيام المد الضعيف.", "Haml: strong tide and current days. Fasad: weak tide days."),
         t("وقت الوقفة (بين المد والجزر) غالبًا أحسن وقت للهامور والبالول.", "The slack between tides is often best for hamour and balool."),
       ],
