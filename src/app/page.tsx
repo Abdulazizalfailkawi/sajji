@@ -21,6 +21,8 @@ import { MOON_LABEL, useI18n } from "@/lib/i18n";
 import { TIDE_SHIFT_DEFAULT_MIN, getConditions, hazards, hourAt, tideShiftMin, turnsOf, type ConditionsResult } from "@/lib/marine/client";
 import { PRESET_SPOTS, presetRank } from "@/lib/marine/presets";
 import { KMC_MARINE_URL } from "@/lib/marine/stations";
+import { VerdictBanner } from "@/components/VerdictBanner";
+import { verdictFor } from "@/lib/verdict";
 import { compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
 import { saveDepthUnit, useDepthUnit, type DepthUnit } from "@/lib/depth";
 import { checkForUpdate } from "@/lib/update";
@@ -105,7 +107,7 @@ export default function MarineHome() {
   const [setOpen, setSetOpen] = useState(false);
   const [upd, setUpd] = useState<string | null>(null);
   const now = useNow(1000);
-  const [unit, setUnit] = useState<WindUnit>("kn");
+  const [unit, setUnit] = useState<WindUnit>("kmh");
   const [spotId, setSpotId] = useState<string | null>(null);
   const [gpsPt, setGpsPt] = useState<{ lat: number; lng: number } | null>(null);
   const [res, setRes] = useState<ConditionsResult | null>(null);
@@ -248,6 +250,7 @@ export default function MarineHome() {
           ? "moderate"
           : "calm";
   const seaLabel = seaLevel === "rough" ? t("رياح شديدة", "Rough") : seaLevel === "moderate" ? t("متوسط", "Moderate") : seaLevel === "calm" ? t("هادئ", "Calm") : "—";
+  const verdict = verdictFor(c, viewing ? dayStart + 5 * H : now, viewing ? dayStart + 19 * H : now + 10 * H);
   const selState = sel != null ? tideState(usingManual ? [] : model.pts, turns, sel) : null;
 
   const dirLabel = (d: string | null) =>
@@ -385,6 +388,13 @@ export default function MarineHome() {
               {t(`بيانات قديمة (جُلبت ${fmtDateTime(c.fetched_at, "ar")}) — تعذر التحديث.`, `Stale data (fetched ${fmtDateTime(c.fetched_at, "en")}) — refresh failed.`)}
             </Notice>
           )}
+
+        <VerdictBanner
+          v={verdict}
+          unit={unit}
+          lang={lang}
+          when={viewing ? t(`${dayName(viewMs, lang)} · من 5 الفجر إلى 7 المغرب`, `${dayName(viewMs, lang)} · 5am–7pm`) : t("للـ 10 ساعات الجاية", "Next 10 hours")}
+        />
 
         {turns.length ? (
           <div className="mb-2 flex gap-2">
