@@ -241,7 +241,7 @@ export default function MarineHome() {
   const chartFrom = viewing ? dayStart : now - 2 * H;
   const chartTo = viewing ? dayStart + 24 * H : now + 24 * H;
   const dayLevels = dayTurns.map((x) => x.h).filter((x): x is number => x != null);
-  const clock = new Intl.DateTimeFormat(lang === "ar" ? "ar-KW-u-nu-latn" : "en-GB", { timeZone: "Asia/Kuwait", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).format(new Date(now));
+  const clock = new Intl.DateTimeFormat(lang === "ar" ? "ar-KW-u-nu-latn" : "en-GB", { timeZone: "Asia/Kuwait", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(now));
   const seaLevel: "calm" | "moderate" | "rough" | null =
     wx?.wind == null && m?.wave_h == null
       ? null
@@ -395,7 +395,7 @@ export default function MarineHome() {
           v={verdict}
           unit={unit}
           lang={lang}
-          when={viewing ? t(`${dayName(viewMs, lang)} · من 5 الفجر إلى 7 المغرب`, `${dayName(viewMs, lang)} · 5am–7pm`) : t("للـ 10 ساعات الجاية", "Next 10 hours")}
+          when={viewing ? dayName(viewMs, lang) : ""}
         />
 
         {turns.length ? (
@@ -423,7 +423,7 @@ export default function MarineHome() {
             tone={viewing ? "rise" : st.direction === "rising" ? "rise" : st.direction === "falling" ? "fall" : "warn"}
             open={open1}
             onToggle={() => setOpen1((v) => !v)}
-            hint={t("اضغط للتفاصيل", "Tap for details")}
+            hint={t("تفاصيل", "Details")}
             aside={viewing ? <span className="text-sm font-bold">{dayName(viewMs, lang)}</span> : <span className="ltr font-mono text-lg font-bold tabular-nums">{clock}</span>}
           >
             {viewing ? (
@@ -440,7 +440,6 @@ export default function MarineHome() {
                     t("بيانات المد غير متوفرة", "Tide data unavailable")
                   )}
                 </div>
-                <div className="mt-1 text-[11px] text-muted">{t("توقع لهذا اليوم — يتحدّث مع الأيام", "Forecast for this day — it updates as the day gets closer")}</div>
               </div>
             ) : st.direction ? (
               <>
@@ -460,6 +459,7 @@ export default function MarineHome() {
                   </div>
                 </div>
               )}
+              {open1 && (
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <div className={cn("flex items-center gap-1.5 text-4xl font-extrabold", dirColor(st.direction))}>
@@ -492,6 +492,7 @@ export default function MarineHome() {
                   )}
                 </div>
               </div>
+              )}
               </>
             ) : (
               <div className="text-sm text-muted">{t("بيانات المد غير متوفرة", "Tide data unavailable")}</div>
@@ -539,6 +540,9 @@ export default function MarineHome() {
                 })}
               </div>
             ) : null}
+            <div className="mt-2 text-xs text-ink-2">
+              {t(`${CYCLE_LABEL[cyc.cycle].ar} — اليوم ${cyc.day}`, `${CYCLE_LABEL[cyc.cycle].en} — day ${cyc.day}`)} · {MOON_EMOJI[moon.phase]}
+            </div>
             {open1 && (
               <div className="mt-3 space-y-2 border-t border-line/40 pt-3 text-sm">
                 {!viewing && st.turn && (
@@ -592,7 +596,7 @@ export default function MarineHome() {
             tone={seaLevel === "rough" ? "fall" : seaLevel === "moderate" ? "warn" : "rise"}
             open={open2}
             onToggle={() => setOpen2((v) => !v)}
-            hint={t("اضغط للتفاصيل", "Tap for details")}
+            hint={t("تفاصيل", "Details")}
             aside={<span className={cn("rounded-full px-2.5 py-0.5 text-sm font-bold", seaLevel === "rough" ? "bg-fall/15 text-fall" : seaLevel === "moderate" ? "bg-warn/15 text-warn" : seaLevel === "calm" ? "bg-rise/15 text-rise" : "bg-surface-2 text-muted")}>{seaLabel}</span>}
           >
             {viewing && (
@@ -600,6 +604,8 @@ export default function MarineHome() {
                 {t(`التوقع عند ${fmtTime(refT, lang)} — اضغط على الجراف لتغيير الساعة`, `Forecast at ${fmtTime(refT, lang)} — tap the graph to change the hour`)}
               </p>
             )}
+            {open2 && (
+              <>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="rounded-xl border border-ocean/30 bg-ocean/10 px-2 py-2">
                 <div className="flex items-center justify-center gap-1 text-[11px] font-medium text-ocean">
@@ -629,18 +635,13 @@ export default function MarineHome() {
                 <div className="text-[11px] text-ink">{wx?.temp != null ? <>{t("الجو", "Air")} <bdi>{wx.temp}°</bdi></> : ""}</div>
               </div>
             </div>
-            <div className="mt-2 flex items-center justify-between rounded-xl bg-surface-2 px-3 py-2 text-sm">
-              <span className="text-[11px] font-medium text-white">{t("دورة اليوم", "Today's cycle")}</span>
-              <span className="font-bold">
-                <span className="text-white">{t(`${CYCLE_LABEL[cyc.cycle].ar} — اليوم`, `${CYCLE_LABEL[cyc.cycle].en} — day`)}</span>{" "}
-                <span className="text-white">{cyc.day}</span>
-              </span>
-            </div>
             {warn.length > 0 && (
               <div className="mt-2 flex items-start gap-1.5 rounded-xl bg-warn/10 px-3 py-2 text-xs text-warn">
                 <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
                 <span>{warn.map((x) => t(x.ar, x.en)).join(" · ")}</span>
               </div>
+            )}
+              </>
             )}
             {open2 && (
               <div className="mt-3 space-y-2 border-t border-line/40 pt-3 text-xs text-ink-2">
@@ -722,7 +723,7 @@ export default function MarineHome() {
           {/* Tile 3 — tide graph */}
           <Card className="mt-2 p-3">
             <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm font-semibold">{t("Graph — صعود وهبوط", "Graph — rise & fall")}{viewing ? ` — ${dayName(viewMs, lang)}` : ""}</span>
+              <span className="text-sm font-semibold">{t("الرسم البياني", "Chart")}{viewing ? ` — ${dayName(viewMs, lang)}` : ""}</span>
               <Link href={`/best-times?day=${dayOff}`} className="flex items-center gap-1 rounded-full border border-ocean/50 bg-ocean/10 px-2.5 py-1 text-xs font-semibold text-white">
                 <Sparkles className="size-3.5 text-ocean" /> {t("أفضل الأوقات", "Best times")}
               </Link>
@@ -734,8 +735,9 @@ export default function MarineHome() {
             </div>
             {!usingManual && model.pts.length > 3 ? (
               <>
-                <div className="mb-1 min-h-10 rounded-xl bg-surface-2 px-3 py-1.5 text-sm">
-                  {sel != null && selState ? (
+                {sel != null && selState && (
+                <div className="mb-1 rounded-xl bg-surface-2 px-3 py-1.5 text-sm">
+                  {(
                     <div className="flex flex-wrap items-center gap-x-3">
                       <b className="ltr">{fmtTime(sel, lang)}</b>
                       <span className={dirColor(selState.direction)}>{dirLabel(selState.direction)}</span>
@@ -750,20 +752,16 @@ export default function MarineHome() {
                         </span>
                       )}
                     </div>
-                  ) : (
-                    <span className="text-xs text-muted">{t("اسحب على المنحنى لمعرفة الوقت والمد", "Drag across the curve to read time and tide")}</span>
                   )}
                 </div>
+                )}
                 <TideChart pts={model.pts} turns={model.turns} from={chartFrom} to={chartTo} now={now} selected={sel} onSelect={setSel} />
                 <div className="mt-1 flex flex-wrap gap-3 text-[11px] text-muted">
                   <span className="flex items-center gap-1">
-                    <span className="h-1 w-4 rounded-full bg-rise" /> {t("سجي (صعود)", "Saji (rising)")}
+                    <span className="h-1 w-4 rounded-full bg-rise" /> {t("صعود", "Rising")}
                   </span>
                   <span className="flex items-center gap-1">
-                    <span className="h-1 w-4 rounded-full bg-fall" /> {t("ثبر (هبوط)", "Thabr (falling)")}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="h-3 w-4 rounded-sm bg-warn/20" /> {t("وقفة تقديرية", "Estimated waqfa")}
+                    <span className="h-1 w-4 rounded-full bg-fall" /> {t("نزول", "Falling")}
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="h-0 w-4 border-t-2 border-dashed border-warn" /> {t("الآن", "now")}
