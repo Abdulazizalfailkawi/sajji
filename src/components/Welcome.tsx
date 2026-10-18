@@ -71,7 +71,6 @@ export function Welcome() {
         t("🟢 زين: الريح هادية والموج قليل، اطلع.", "🟢 Good: light wind, small waves."),
         t("🟡 انتبه: ريح أو موج متوسط، طلعة قصيرة وقريبة.", "🟡 Careful: moderate wind or waves — stay short and close."),
         t("🔴 لا تطلع: ريح قوية أو موج عالي.", "🔴 Don't go: strong wind or high waves."),
-        t("الحكم للقارب الصغير (40 حصان) ويتبع الأسوأ بين الريح والموج.", "Judged for a small 40 hp boat, by the worse of wind and waves."),
       ],
     },
     {

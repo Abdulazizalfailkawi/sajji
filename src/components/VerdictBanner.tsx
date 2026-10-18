@@ -47,7 +47,6 @@ export function VerdictBanner({ v, unit, lang, when }: { v: Verdict | null; unit
         )}
         <span className="text-muted">{when}</span>
       </div>
-      <div className="mt-2 text-[11px] text-muted">{t("الحكم للقارب الصغير (40 حصان) ويتبع الأسوأ بين الريح والموج. المسؤولية على القبطان.", "For a small 40 hp boat; follows the worse of wind and waves. The skipper decides.")}</div>
     </section>
   );
 }
