@@ -517,7 +517,8 @@ export default function MarineHome() {
                               <div className="whitespace-nowrap text-lg font-bold leading-tight">{fmtTime(e.t, lang)}</div>
                               <div className={cn("text-[11px] leading-tight text-white", dayOff === 0 && !past && e.t === nextT && "font-semibold")}>
                                 {nth(i)} {nth(i) ? "· " : ""}
-                                {dayOff > 0 ? (e.h != null ? <bdi>{`${e.h} ${t("م", "m")}`}</bdi> : "") : past ? t("مضى", "passed") : remain(e.t - now, lang)}
+                                {e.h != null ? <bdi>{`${e.h.toFixed(2)} ${t("م", "m")}`}</bdi> : ""}
+                                {dayOff === 0 ? ` · ${past ? t("مضى", "passed") : remain(e.t - now, lang)}` : ""}
                               </div>
                             </div>
                           );
@@ -530,6 +531,14 @@ export default function MarineHome() {
                 })}
               </div>
             ) : null}
+            {turns.length > 0 && (dayTurns.filter((x) => x.type === "high").length < 2 || dayTurns.filter((x) => x.type === "low").length < 2) && (
+              <div className="mt-2 rounded-xl bg-surface-2 px-3 py-2 text-[11px] leading-relaxed text-ink-2">
+                {t(
+                  "اليوم ما فيه إلا مد واحد أو جزر واحد بشكل واضح. هذا يصير بعض الأيام بسبب دورة القمر (المد الثاني ضعيف جدًا أو يطلع في اليوم اللي بعده).",
+                  "Only one clear high or low today. This happens on some days with the moon cycle (the second one is very weak or falls on the next day).",
+                )}
+              </div>
+            )}
             {open1 && (
               <div className="mt-3 space-y-2 border-t border-line/40 pt-3 text-sm">
                 {!viewing && st.turn && (
