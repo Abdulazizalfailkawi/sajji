@@ -282,3 +282,9 @@ export function hazards(c: Conditions, from: number, to: number): { key: string;
   if (storm) out.push({ key: "storm", ar: "احتمال عواصف رعدية", en: "Thunderstorms possible" });
   return out;
 }
+
+/** 00:00 Asia/Kuwait (UTC+3, no DST) of the day containing `ms`. */
+export function kuwaitMidnight(ms: number): number {
+  const D = 86_400_000;
+  return Math.floor((ms + 3 * 3_600_000) / D) * D - 3 * 3_600_000;
+}

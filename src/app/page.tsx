@@ -35,6 +35,7 @@ import { isActiveStatus } from "@/lib/types";
 import { useIsAdmin } from "@/lib/admin";
 import { SaveSpotSheet } from "@/components/SaveSpotSheet";
 import { PushSettings } from "@/components/PushSettings";
+import { kuwaitMidnight } from "@/lib/marine/client";
 
 const H = 3_600_000;
 const STALE_MS = 6 * H;
@@ -198,7 +199,7 @@ export default function MarineHome() {
       if (!pt) return;
       setLoading(true);
       const base = hourKey * H;
-      setRes(await getConditions(pt.lat, pt.lng, new Date(base - 14 * H), new Date(base + 76 * H), { force }));
+      setRes(await getConditions(pt.lat, pt.lng, new Date(Math.min(base - 14 * H, kuwaitMidnight(base) - 6 * H)), new Date(base + 76 * H), { force }));
       setLoading(false);
     },
     [pt?.lat, pt?.lng, hourKey], // eslint-disable-line react-hooks/exhaustive-deps

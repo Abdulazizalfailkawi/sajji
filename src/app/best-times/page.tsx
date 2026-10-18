@@ -14,6 +14,7 @@ import { useStore } from "@/lib/db/store";
 import { useI18n } from "@/lib/i18n";
 import { getConditions, hourAt, turnsOf, type ConditionsResult } from "@/lib/marine/client";
 import { dateKey, fmtTime } from "@/lib/time";
+import { kuwaitMidnight } from "@/lib/marine/client";
 
 const H = 3_600_000;
 
@@ -74,7 +75,7 @@ function BestTimes() {
     let alive = true;
     setLoading(true);
     const base = hourKey * H;
-    void getConditions(spot.lat!, spot.lng!, new Date(base - 14 * H), new Date(base + 80 * H)).then((r) => {
+    void getConditions(spot.lat!, spot.lng!, new Date(Math.min(base - 14 * H, kuwaitMidnight(base) - 6 * H)), new Date(base + 80 * H)).then((r) => {
       if (alive) {
         setRes(r);
         setLoading(false);
