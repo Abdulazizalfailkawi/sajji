@@ -48,8 +48,7 @@ export function SaveSpotSheet({ open, onClose, onSaved }: { open: boolean; onClo
     setCopied(false);
     setNotes("");
     setDepth(null);
-    const now = new Date();
-    setName(`${t("علامة", "Mark")} ${fmtDate(now, lang, { year: undefined })} ${fmtTime(now, lang)}`);
+    setName("");
     void locate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -62,7 +61,7 @@ export function SaveSpotSheet({ open, onClose, onSaved }: { open: boolean; onClo
     const ts = new Date().toISOString();
     const mark: Mark = {
       id: uuid(),
-      name: name.trim() || `${t("علامة", "Mark")} ${coords}`,
+      name: name.trim() || `${t("علامة", "Mark")} ${fmtDate(new Date(), lang, { year: undefined })} ${fmtTime(new Date(), lang)}`,
       lat: pt.lat,
       lng: pt.lng,
       depth_m: fromUnit(depth, du),
@@ -124,6 +123,9 @@ export function SaveSpotSheet({ open, onClose, onSaved }: { open: boolean; onClo
             )}
             {pt && (
               <>
+                <Field label={t("اسم المكان اللي أنت فيه", "Name of the place you're at")}>
+                  <Input value={name} maxLength={60} autoFocus placeholder={t("مثلاً: عند الجسر، قدام الشاليهات…", "e.g. by the pier, in front of the chalets…")} onChange={(e) => setName(e.target.value)} />
+                </Field>
                 <div className="rounded-xl border border-ocean/40 bg-ocean/10 px-3 py-3 text-center">
                   <div className="text-xs font-medium text-ocean">{t("إحداثيتك الحالية", "Your current coordinate")}</div>
                   <div className="ltr mt-1 font-mono text-lg font-bold">{coords}</div>
@@ -131,9 +133,6 @@ export function SaveSpotSheet({ open, onClose, onSaved }: { open: boolean; onClo
                     {busy ? t("جاري التحديث…", "Updating…") : t("تحديث الموقع", "Refresh position")}
                   </button>
                 </div>
-                <Field label={t("اسم العلامة (اختياري)", "Mark name (optional)")}>
-                  <Input value={name} maxLength={60} onChange={(e) => setName(e.target.value)} />
-                </Field>
                 <Field label={t(`العمق (${depthWord(du, lang)}) — اختياري`, `Depth (${depthWord(du, lang)}) — optional`)}>
                   <NumberInput value={toUnit(depth, du)} onChange={(v) => setDepth(fromUnit(v, du))} />
                 </Field>
