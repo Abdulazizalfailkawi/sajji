@@ -853,19 +853,19 @@ export default function MarineHome() {
                   onClick={() => {
                     setTideShift(TIDE_SHIFT_DEFAULT_MIN);
                     try {
-                      localStorage.removeItem("ft.tideShift");
+                      localStorage.removeItem("ft.tideAdjust");
                     } catch {}
                   }}
                 >
                   {t("إعادة", "Reset")}
                 </button>
               </div>
-              <div className="text-xs text-ink-2">{t(`تأخير كل أوقات المد والجزر ${tideShift} دقيقة عن النموذج`, `All tide times are shifted ${tideShift} min later than the model`)}</div>
+              <div className="text-xs text-ink-2">{t(`تعديل إضافي فوق تصحيح المكان: ${tideShift > 0 ? "+" : ""}${tideShift} دقيقة`, `Extra adjustment on top of the place calibration: ${tideShift > 0 ? "+" : ""}${tideShift} min`)}</div>
               <input
                 type="range"
                 dir="ltr"
                 min={-60}
-                max={150}
+                max={60}
                 step={5}
                 value={tideShift}
                 aria-label={t("تقريب توقيت المد", "Tide time adjustment")}
@@ -873,7 +873,7 @@ export default function MarineHome() {
                   const v = Number(e.target.value);
                   setTideShift(v);
                   try {
-                    localStorage.setItem("ft.tideShift", String(v));
+                    localStorage.setItem("ft.tideAdjust", String(v));
                   } catch {}
                 }}
                 className="w-full accent-[#7fb6f0]"
