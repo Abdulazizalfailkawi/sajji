@@ -15,6 +15,7 @@ import { fmtDate, fromLocalInput, nowLocalInput, toLocalInput } from "@/lib/time
 import { MOON_PHASES, TIDES, isActiveStatus, type Catch, type IdentificationStatus } from "@/lib/types";
 import { validateCatch } from "@/lib/validate";
 import { useToast } from "@/components/Toast";
+import { TideAtTime } from "@/components/TideAtTime";
 import { activeTrip, targetsOf } from "@/lib/trips";
 import { normalizeName } from "@/lib/normalize";
 import { getGps } from "@/lib/gps";
@@ -299,6 +300,11 @@ function CatchEdit() {
               </Button>
             </div>
           </Field>
+          <TideAtTime
+            lat={c.lat ?? (c.location_id ? idx.locById.get(c.location_id)?.lat : null) ?? trip?.lat ?? (trip?.location_id ? idx.locById.get(trip.location_id)?.lat : null) ?? null}
+            lng={c.lng ?? (c.location_id ? idx.locById.get(c.location_id)?.lng : null) ?? trip?.lng ?? (trip?.location_id ? idx.locById.get(trip.location_id)?.lng : null) ?? null}
+            at={fromLocalInput(timeIn)}
+          />
           {errors.caught_at === "outside_trip" && (
             <Button size="sm" variant="ghost" onClick={() => doSave(false, true)}>
               {t("الوقت صحيح، احفظ على أي حال", "Time is right, save anyway")}
