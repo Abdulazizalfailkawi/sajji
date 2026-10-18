@@ -21,10 +21,12 @@ import { MOON_LABEL, useI18n } from "@/lib/i18n";
 import { TIDE_SHIFT_DEFAULT_MIN, getConditions, hazards, hourAt, tideShiftMin, turnsOf, type ConditionsResult } from "@/lib/marine/client";
 import { PRESET_SPOTS, presetRank } from "@/lib/marine/presets";
 import { KMC_MARINE_URL } from "@/lib/marine/stations";
+import { VerdictBanner } from "@/components/VerdictBanner";
+import { verdictFor } from "@/lib/verdict";
 import { compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
 import { saveDepthUnit, useDepthUnit, type DepthUnit } from "@/lib/depth";
 import { checkForUpdate } from "@/lib/update";
-import { tideState, turningPointsFromEvents, type TurnEvent } from "@/lib/marine/waqfa";
+import { tideNow, tideState, turningPointsFromEvents, type TurnEvent } from "@/lib/marine/waqfa";
 import { CYCLE_LABEL, cycleInfo, readCycleConfig } from "@/lib/tidecycle";
 import { dateKey, fmtDate, fmtDateTime, fmtTime } from "@/lib/time";
 import { normalizeName } from "@/lib/normalize";
@@ -105,7 +107,7 @@ export default function MarineHome() {
   const [setOpen, setSetOpen] = useState(false);
   const [upd, setUpd] = useState<string | null>(null);
   const now = useNow(1000);
-  const [unit, setUnit] = useState<WindUnit>("kn");
+  const [unit, setUnit] = useState<WindUnit>("kmh");
   const [spotId, setSpotId] = useState<string | null>(null);
   const [gpsPt, setGpsPt] = useState<{ lat: number; lng: number } | null>(null);
   const [res, setRes] = useState<ConditionsResult | null>(null);
@@ -248,6 +250,8 @@ export default function MarineHome() {
           ? "moderate"
           : "calm";
   const seaLabel = seaLevel === "rough" ? t("رياح شديدة", "Rough") : seaLevel === "moderate" ? t("متوسط", "Moderate") : seaLevel === "calm" ? t("هادئ", "Calm") : "—";
+  const verdict = verdictFor(c, viewing ? dayStart + 5 * H : now, viewing ? dayStart + 19 * H : now + 10 * H);
+  const tn = viewing ? null : tideNow(turns, now);
   const selState = sel != null ? tideState(usingManual ? [] : model.pts, turns, sel) : null;
 
   const dirLabel = (d: string | null) =>
@@ -386,6 +390,13 @@ export default function MarineHome() {
             </Notice>
           )}
 
+        <VerdictBanner
+          v={verdict}
+          unit={unit}
+          lang={lang}
+          when={viewing ? t(`${dayName(viewMs, lang)} · من 5 الفجر إلى 7 المغرب`, `${dayName(viewMs, lang)} · 5am–7pm`) : t("للـ 10 ساعات الجاية", "Next 10 hours")}
+        />
+
         {turns.length ? (
           <div className="mb-2 flex gap-2">
             {[0, 1, 2].map((d) => (
@@ -431,6 +442,23 @@ export default function MarineHome() {
                 <div className="mt-1 text-[11px] text-muted">{t("توقع لهذا اليوم — يتحدّث مع الأيام", "Forecast for this day — it updates as the day gets closer")}</div>
               </div>
             ) : st.direction ? (
+              <>
+              {tn && (
+                <div className="mb-3 rounded-xl bg-black/25 px-3 py-2 text-base font-bold leading-snug">
+                  {tn.kind === "at_high"
+                    ? t("🌊 الحين مد عالي", "🌊 High tide now")
+                    : tn.kind === "at_low"
+                      ? t("🌊 الحين جزر", "🌊 Low tide now")
+                      : tn.kind === "rising"
+                        ? t("⬆️ صعود الماء", "⬆️ Water rising")
+                        : t("⬇️ نزول الماء", "⬇️ Water falling")}
+                  <div className="mt-0.5 text-xs font-normal text-ink-2">
+                    {tn.kind === "at_high" || tn.kind === "at_low"
+                      ? t(`ذروته ${fmtTime(tn.turn.t, lang)}${tn.next ? ` · بعده ${tn.next.type === "high" ? "مد" : "جزر"} ${fmtTime(tn.next.t, lang)}` : ""}`, `Peak ${fmtTime(tn.turn.t, lang)}`)
+                      : t(`${tn.next!.type === "high" ? "المد العالي" : "الجزر"} بعد ${Math.floor(tn.minutes / 60)} س ${tn.minutes % 60} د (${fmtTime(tn.next!.t, lang)})`, `${tn.next!.type === "high" ? "High tide" : "Low tide"} in ${Math.floor(tn.minutes / 60)}h ${tn.minutes % 60}m (${fmtTime(tn.next!.t, lang)})`)}
+                  </div>
+                </div>
+              )}
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <div className={cn("flex items-center gap-1.5 text-4xl font-extrabold", dirColor(st.direction))}>
@@ -463,6 +491,7 @@ export default function MarineHome() {
                   )}
                 </div>
               </div>
+              </>
             ) : (
               <div className="text-sm text-muted">{t("بيانات المد غير متوفرة", "Tide data unavailable")}</div>
             )}
@@ -488,14 +517,22 @@ export default function MarineHome() {
                               <div className="whitespace-nowrap text-lg font-bold leading-tight">{fmtTime(e.t, lang)}</div>
                               <div className={cn("text-[11px] leading-tight text-white", dayOff === 0 && !past && e.t === nextT && "font-semibold")}>
                                 {nth(i)} {nth(i) ? "· " : ""}
-                                {dayOff > 0 ? (e.h != null ? <bdi>{`${e.h} ${t("م", "m")}`}</bdi> : "") : past ? t("مضى", "passed") : remain(e.t - now, lang)}
+                                {e.h != null ? <bdi>{`${e.h.toFixed(2)} ${t("م", "m")}`}</bdi> : ""}
+                                {dayOff === 0 ? ` · ${past ? t("مضى", "passed") : remain(e.t - now, lang)}` : ""}
                               </div>
                             </div>
                           );
                         })
-                      ) : (
-                        <div className="text-sm text-muted">—</div>
-                      )}
+                      ) : null}
+                      {Array.from({ length: Math.max(0, 2 - list.length) }, (_, k) => (
+                        <div key={`none${k}`} className="mt-1.5">
+                          <div className="ltr text-lg font-bold leading-tight text-muted">— — : — —</div>
+                          <div className="text-[11px] leading-tight text-muted">
+                            {type === "high" ? t("ما في مد", "No high tide") : t("ما في جزر", "No low tide")}
+                            {list.length === 1 ? ` ${t("ثاني", "second")}` : ""} 
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   );
                 })}
@@ -853,19 +890,19 @@ export default function MarineHome() {
                   onClick={() => {
                     setTideShift(TIDE_SHIFT_DEFAULT_MIN);
                     try {
-                      localStorage.removeItem("ft.tideShift");
+                      localStorage.removeItem("ft.tideAdjust");
                     } catch {}
                   }}
                 >
                   {t("إعادة", "Reset")}
                 </button>
               </div>
-              <div className="text-xs text-ink-2">{t(`تأخير كل أوقات المد والجزر ${tideShift} دقيقة عن النموذج`, `All tide times are shifted ${tideShift} min later than the model`)}</div>
+              <div className="text-xs text-ink-2">{t(`تعديل إضافي فوق تصحيح المكان: ${tideShift > 0 ? "+" : ""}${tideShift} دقيقة`, `Extra adjustment on top of the place calibration: ${tideShift > 0 ? "+" : ""}${tideShift} min`)}</div>
               <input
                 type="range"
                 dir="ltr"
                 min={-60}
-                max={150}
+                max={60}
                 step={5}
                 value={tideShift}
                 aria-label={t("تقريب توقيت المد", "Tide time adjustment")}
@@ -873,7 +910,7 @@ export default function MarineHome() {
                   const v = Number(e.target.value);
                   setTideShift(v);
                   try {
-                    localStorage.setItem("ft.tideShift", String(v));
+                    localStorage.setItem("ft.tideAdjust", String(v));
                   } catch {}
                 }}
                 className="w-full accent-[#7fb6f0]"

@@ -1,3 +1,4 @@
+import { MIN_TIDE_RANGE_M } from "../../config/marine";
 // Tide derivation from a sea-level time series.
 //
 // High / low tides are found as local extrema of the series (refined with a
@@ -27,7 +28,7 @@ export function cleanSeries(raw: { t: string | number; h: number | null | undefi
     .sort((a, b) => a.t - b.t);
 }
 
-export function findExtrema(pts: Pt[], minRange = 0.15): Extreme[] {
+export function findExtrema(pts: Pt[], minRange = MIN_TIDE_RANGE_M): Extreme[] {
   const raw: Extreme[] = [];
   for (let i = 1; i < pts.length - 1; i++) {
     const a = pts[i - 1];

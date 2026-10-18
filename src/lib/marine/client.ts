@@ -2,6 +2,7 @@
 // location/time window isn't requested repeatedly, plus helpers that turn a
 // response into environmental snapshot rows.
 
+import { calibrationFor } from "../../config/marine";
 import { moonAt, sunTimes } from "../astro";
 import { uuid } from "../ids";
 import type { EnvPurpose, EnvironmentObservation } from "../types";
@@ -91,23 +92,28 @@ export function hourAt<T extends { t: string }>(hours: T[], at: number): T | nul
  * Every model time is therefore moved later by this many minutes. The admin
  * can fine-tune it from the settings sheet (stored on the device).
  */
-export const TIDE_SHIFT_DEFAULT_MIN = 40;
+// The shift is now per place (src/config/marine.ts, measured against the
+// bulletin). The admin slider is only an extra adjustment on top (default 0).
+export const TIDE_SHIFT_DEFAULT_MIN = 0;
 
 export function tideShiftMin(): number {
   if (typeof window === "undefined") return 0;
   try {
-    const raw = localStorage.getItem("ft.tideShift");
+    const raw = localStorage.getItem("ft.tideAdjust");
     const v = raw == null ? NaN : Number(raw);
     if (Number.isFinite(v)) return Math.min(180, Math.max(-180, v));
   } catch {}
   return TIDE_SHIFT_DEFAULT_MIN;
 }
 
-export function turnsOf(c: Conditions, shiftMin = tideShiftMin()): { pts: Pt[]; turns: TurnEvent[] } {
+/** `adjustMin` = manual extra shift on top of the place calibration. */
+export function turnsOf(c: Conditions, adjustMin = tideShiftMin()): { pts: Pt[]; turns: TurnEvent[] } {
   if (c.tide.status === "unavailable" || c.tide.status === "error") return { pts: [], turns: [] };
-  const shift = shiftMin * 60_000;
-  const pts = cleanSeries(c.tide.series.map((p) => ({ t: p.t, h: p.h }))).map((p) => ({ ...p, t: p.t + shift }));
-  const ext = c.tide.extremes.map((e) => ({ t: Date.parse(e.t) + shift, h: e.h, type: e.type }));
+  const cal = calibrationFor(c.request.lat, c.request.lng);
+  const shift = (cal.shiftMin + adjustMin) * 60_000;
+  const dh = cal.heightOffsetM;
+  const pts = cleanSeries(c.tide.series.map((p) => ({ t: p.t, h: p.h }))).map((p) => ({ ...p, t: p.t + shift, h: p.h + dh }));
+  const ext = c.tide.extremes.map((e) => ({ t: Date.parse(e.t) + shift, h: e.h + dh, type: e.type }));
   return { pts, turns: turningPoints(pts, ext) };
 }
 
