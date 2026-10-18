@@ -19,15 +19,21 @@ export interface CycleConfig {
   fasad: DayRange[];
 }
 
-/** Default: strong tides ~1–3 days after new/full moon, weak tides around the quarters. */
+/**
+ * Default, taken from the Kuwait tide bulletin kept in reference/tides/: haml runs
+ * from the 27th to the 4th of the Hijri month ("نهاية الحمل" on the 4th, "بداية
+ * الفساد الصغير" on the 5th, 18 Oct 2026 = 7th = 3rd day of fasad). The second
+ * half of the month mirrors it around the full moon (12–19 haml, 20–26 fasad);
+ * that half is inferred by symmetry, not read from the bulletin.
+ */
 export const DEFAULT_CYCLE: CycleConfig = {
   hamal: [
-    [13, 18],
-    [28, 3],
+    [12, 19],
+    [27, 4],
   ],
   fasad: [
-    [6, 11],
-    [20, 25],
+    [5, 11],
+    [20, 26],
   ],
 };
 

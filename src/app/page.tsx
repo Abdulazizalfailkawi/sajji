@@ -22,6 +22,7 @@ import { TIDE_SHIFT_DEFAULT_MIN, getConditions, hazards, hourAt, tideShiftMin, t
 import { PRESET_SPOTS, presetRank } from "@/lib/marine/presets";
 import { KMC_MARINE_URL } from "@/lib/marine/stations";
 import { VerdictBanner } from "@/components/VerdictBanner";
+import { WindDays } from "@/components/WindDays";
 import { verdictFor } from "@/lib/verdict";
 import { compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
 import { saveDepthUnit, useDepthUnit, type DepthUnit } from "@/lib/depth";
@@ -383,7 +384,14 @@ export default function MarineHome() {
       ) : (
         <>
           {res?.error && !c && (
-            <Notice tone="warn">{res.error === "OFFLINE" ? t("لا يوجد اتصال ولا توجد بيانات محفوظة لهذا الموقع.", "Offline and no saved data for this spot.") : t("تعذر الاتصال بمصدر البيانات.", "Couldn't reach the data provider.")}</Notice>
+            <Notice tone="warn">
+              <div className="flex items-center justify-between gap-2">
+                <span>{res.error === "OFFLINE" ? t("لا يوجد اتصال ولا توجد بيانات محفوظة لهذا الموقع.", "Offline and no saved data for this spot.") : t("تعذر الاتصال بمصدر البيانات.", "Couldn't reach the data provider.")}</span>
+                <button type="button" disabled={loading || !online} onClick={() => load(true)} className="shrink-0 rounded-full border border-warn/60 px-3 py-1 text-xs font-bold disabled:opacity-50">
+                  {loading ? t("جاري المحاولة…", "Trying…") : t("حاول مرة ثانية", "Try again")}
+                </button>
+              </div>
+            </Notice>
           )}
           {(stale || res?.stale) && c && (
             <Notice tone="warn" className="mb-3">
@@ -397,6 +405,17 @@ export default function MarineHome() {
           lang={lang}
           when={viewing ? dayName(viewMs, lang) : ""}
         />
+
+        {c && (c.marine.status === "error" || c.marine.status === "unavailable") && (
+          <Notice tone="warn" className="mb-3">
+            <div className="flex items-center justify-between gap-2">
+              <span>{t("تعذر تحميل الموج.", "Couldn't load wave data.")}</span>
+              <button type="button" disabled={loading || !online} onClick={() => load(true)} className="shrink-0 rounded-full border border-warn/60 px-3 py-1 text-xs font-bold disabled:opacity-50">
+                {loading ? t("جاري المحاولة…", "Trying…") : t("حاول مرة ثانية", "Try again")}
+              </button>
+            </div>
+          </Notice>
+        )}
 
         {turns.length ? (
           <div className="mb-2 flex gap-2">
@@ -645,6 +664,7 @@ export default function MarineHome() {
             )}
             {open2 && (
               <div className="mt-3 space-y-2 border-t border-line/40 pt-3 text-xs text-ink-2">
+                {c && <WindDays c={c} now={now} unit={unit} lang={lang} />}
                 {wx?.wind != null && (
                   <div>
                     {t("هبات", "Gusts")} {fmtWind(wx.gust, unit, lang)} <KindBadge kind={cur ? "forecast" : (w?.k ?? "unavailable")} />
@@ -671,12 +691,6 @@ export default function MarineHome() {
                     {t("التيار (نموذج)", "Current (model)")} {(m.cur_v / 1.852).toFixed(1)} {t("عقدة", "kn")}
                   </div>
                 )}
-                <p className="text-[11px] text-muted">
-                  {t("ارتفاع الموج من نموذج بحري بدقة ~٨ كم، وقد يقلّل الموج قرب الساحل الضحل في شمال الخليج؛ قارنه بالنشرة الرسمية قبل الخروج.", "Wave height comes from an ocean model at ~8 km resolution and can under-estimate waves near the shallow northern Gulf coast; compare with the official bulletin before going out.")}
-                </p>
-                <p className="text-[11px] text-muted">
-                  {t("التصنيف: هادئ، متوسط، أو شديد حسب الرياح (٢٠ و٣٧ كم/س) والموج (٠٫٦ و١٫٥ م). هذا تقدير مبسّط وليس نشرة رسمية.", "Calm / moderate / rough from wind (20 and 37 km/h) and waves (0.6 and 1.5 m). A simple estimate, not an official bulletin.")}
-                </p>
                 <a href={KMC_MARINE_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-teal underline">
                   {t("النشرة البحرية الرسمية", "Official marine bulletin")} <ExternalLink className="size-3" />
                 </a>

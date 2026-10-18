@@ -74,7 +74,7 @@ function CycleSettings() {
   const saveIt = () => {
     const h = parseRanges(hamal);
     const f = parseRanges(fasad);
-    if (!h || !f) return setMsg({ tone: "bad", text: t("صيغة غير صحيحة — مثال: 13-18, 28-3", "Invalid format — e.g. 13-18, 28-3") });
+    if (!h || !f) return setMsg({ tone: "bad", text: t("صيغة غير صحيحة — مثال: 12-19, 27-4", "Invalid format — e.g. 12-19, 27-4") });
     const cfg = { hamal: h, fasad: f };
     if (overlaps(cfg)) return setMsg({ tone: "bad", text: t("بعض الأيام موجودة في الحمل والفساد معاً", "Some days are in both Haml and Fasad") });
     saveCycleConfig(cfg);
@@ -88,10 +88,10 @@ function CycleSettings() {
           "Haml: strong-tide days near the new and full moon. Fasad: weak-tide days near the quarters. Counted by Hijri day (with the offset above). Days outside both are transitional. Adjust to the convention you follow.",
         )}
       </p>
-      <Field label={t("أيام الحمل (هجري)", "Haml days (Hijri)")} hint="13-18, 28-3">
+      <Field label={t("أيام الحمل (هجري)", "Haml days (Hijri)")} hint="12-19, 27-4">
         <Input dir="ltr" value={hamal} onChange={(e) => setHamal(e.target.value)} />
       </Field>
-      <Field label={t("أيام الفساد (هجري)", "Fasad days (Hijri)")} hint="6-11, 20-25">
+      <Field label={t("أيام الفساد (هجري)", "Fasad days (Hijri)")} hint="5-11, 20-26">
         <Input dir="ltr" value={fasad} onChange={(e) => setFasad(e.target.value)} />
       </Field>
       {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}

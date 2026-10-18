@@ -67,7 +67,7 @@ async function getConditionsRaw(lat: number, lng: number, from: Date, to: Date, 
     return { data: cached?.data ?? null, savedAt: cached?.at ?? null, stale: !!cached, fromCache: !!cached, error: "OFFLINE" };
   try {
     const q = new URLSearchParams({ lat: String(lat), lng: String(lng), from: from.toISOString(), to: to.toISOString() });
-    const r = await fetch(`/api/conditions?${q}`);
+    const r = await fetch(`/api/conditions?${q}`, { signal: AbortSignal.timeout(20_000) });
     const j = await r.json();
     if (!r.ok) throw new Error(j.error ?? `HTTP_${r.status}`);
     const entry = { at: Date.now(), data: j as Conditions };
