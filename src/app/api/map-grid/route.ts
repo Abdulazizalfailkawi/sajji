@@ -3,6 +3,7 @@
 // (multi-location), cached for 15 minutes.
 
 import { clientIp, limited } from "@/lib/rateLimit";
+import { WIND_FACTOR, windSeaHeightM } from "@/config/marine";
 
 export const runtime = "nodejs";
 export const maxDuration = 20;
@@ -38,14 +39,21 @@ export async function GET(req: Request) {
   ]);
   const w = wx.status === "fulfilled" ? asArray(wx.value) : [];
   const s = sea.status === "fulfilled" ? asArray(sea.value) : [];
-  const points = POINTS.map(([lat, lng], i) => ({
-    lat,
-    lng,
-    wind: (w[i]?.current?.wind_speed_10m as number | null | undefined) ?? null,
-    gust: (w[i]?.current?.wind_gusts_10m as number | null | undefined) ?? null,
-    dir: (w[i]?.current?.wind_direction_10m as number | null | undefined) ?? null,
-    wave: (s[i]?.current?.wave_height as number | null | undefined) ?? null,
-  }));
+  const points = POINTS.map(([lat, lng], i) => {
+    const raw = (w[i]?.current?.wind_speed_10m as number | null | undefined) ?? null;
+    const wind = raw == null ? null : Math.round(raw * WIND_FACTOR * 10) / 10;
+    const g = (w[i]?.current?.wind_gusts_10m as number | null | undefined) ?? null;
+    const model = (s[i]?.current?.wave_height as number | null | undefined) ?? null;
+    const est = windSeaHeightM(wind);
+    return {
+      lat,
+      lng,
+      wind,
+      gust: g == null ? null : Math.max(g, wind ?? 0),
+      dir: (w[i]?.current?.wind_direction_10m as number | null | undefined) ?? null,
+      wave: est != null && (model == null || est > model) ? est : model,
+    };
+  });
   if (!points.some((p) => p.wind != null || p.wave != null)) return Response.json({ error: "UNAVAILABLE" }, { status: 502 });
   return Response.json({ fetched_at: new Date().toISOString(), points }, { headers: { "Cache-Control": "public, s-maxage=900, stale-while-revalidate=1800" } });
 }

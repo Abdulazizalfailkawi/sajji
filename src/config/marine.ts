@@ -121,3 +121,28 @@ export const BEST_WEIGHTS = {
   wind: { startKmh: 25, fullKmh: 45, minFactor: 0.45 },
   wave: { startM: 0.8, fullM: 1.5, minFactor: 0.5 },
 } as const;
+
+// ---------------------------------------------------------------- wind & wave calibration
+//
+// Wind: Open-Meteo's 10 m wind is a grid average and runs LOW. Compared hour by
+// hour with the Kuwait International Airport METAR (397 hours, 2–18 Oct 2026):
+// least-squares factor 1.52, bias -4.0 km/h -> -0.7 km/h, RMSE 6.0 -> 4.5 km/h.
+// In the strong-wind hours (airport >= 20 km/h) the model averaged 14.5 vs 25.5
+// km/h observed, so even x1.55 is still a little low there. The airport is inland;
+// over open water the wind is usually stronger, never weaker.
+export const WIND_FACTOR = 1.55;
+
+// Waves: the ocean model gives ~0.1–0.3 m in Kuwait Bay even when the wind is
+// 30 km/h, and every public wave model checked (best_match, ECMWF WAM, GWAM,
+// ERA5-ocean) was below the daily bulletin. There is no measured wave record
+// to fit, so for safety the app also estimates the local WIND-SEA from the
+// calibrated wind over a short fetch (Sverdrup–Munk–Bretschneider, fetch-limited:
+// Hs = 0.0016 · U · sqrt(F/g)) and shows the HIGHER of the model and this estimate.
+// It is a conservative guess, not a measurement.
+export const WAVE_FETCH_KM = 20;
+
+export function windSeaHeightM(windKmh: number | null | undefined, fetchKm = WAVE_FETCH_KM): number | null {
+  if (windKmh == null) return null;
+  const u = windKmh / 3.6;
+  return Math.round(0.0016 * u * Math.sqrt((fetchKm * 1000) / 9.81) * 100) / 100;
+}

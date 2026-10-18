@@ -2,7 +2,7 @@
 // location/time window isn't requested repeatedly, plus helpers that turn a
 // response into environmental snapshot rows.
 
-import { calibrationFor } from "../../config/marine";
+import { WIND_FACTOR, calibrationFor, windSeaHeightM } from "../../config/marine";
 import { moonAt, sunTimes } from "../astro";
 import { uuid } from "../ids";
 import type { EnvPurpose, EnvironmentObservation } from "../types";
@@ -18,6 +18,27 @@ function cacheKey(lat: number, lng: number, from: number, to: number) {
   return `ft.cond:${lat.toFixed(2)},${lng.toFixed(2)}:${Math.floor(from / h)}-${Math.ceil(to / h)}`;
 }
 
+/**
+ * Wind x WIND_FACTOR (model runs low vs airport observations) and waves = the
+ * higher of the model and a fetch-limited wind-sea estimate. Applied on a copy,
+ * to raw (cached) data, so it is never applied twice.
+ */
+export function calibrateConditions(c: Conditions): Conditions {
+  const r1 = (x: number) => Math.round(x * 10) / 10;
+  const wind = (v: number | null) => (v == null ? null : r1(v * WIND_FACTOR));
+  const hours = c.weather.hours.map((h) => {
+    const w = wind(h.wind);
+    return { ...h, wind: w, gust: h.gust == null ? null : Math.max(h.gust, w ?? 0) };
+  });
+  const windAt = new Map(hours.map((h) => [Date.parse(h.t), h.wind]));
+  const marineHours = c.marine.hours.map((h) => {
+    const est = windSeaHeightM(windAt.get(Date.parse(h.t)) ?? null);
+    return est != null && (h.wave_h == null || est > h.wave_h) ? { ...h, wave_h: est } : h;
+  });
+  const cur = c.current ? { ...c.current, wind: wind(c.current.wind ?? null), gust: c.current.gust == null ? null : Math.max(c.current.gust, wind(c.current.wind ?? null) ?? 0) } : c.current;
+  return { ...c, weather: { ...c.weather, hours }, marine: { ...c.marine, hours: marineHours }, current: cur as Conditions["current"] };
+}
+
 export interface ConditionsResult {
   data: Conditions | null;
   savedAt: number | null;
@@ -27,6 +48,11 @@ export interface ConditionsResult {
 }
 
 export async function getConditions(lat: number, lng: number, from: Date, to: Date, opts: { force?: boolean } = {}): Promise<ConditionsResult> {
+  const r = await getConditionsRaw(lat, lng, from, to, opts);
+  return r.data ? { ...r, data: calibrateConditions(r.data) } : r;
+}
+
+async function getConditionsRaw(lat: number, lng: number, from: Date, to: Date, opts: { force?: boolean } = {}): Promise<ConditionsResult> {
   const key = cacheKey(lat, lng, from.getTime(), to.getTime());
   let cached = mem.get(key) ?? null;
   if (!cached) {
@@ -201,7 +227,7 @@ export function snapshotRows(
       category: "weather",
       kind: w.k,
       source: c.weather.source,
-      method: `hourly value nearest to the requested time; grid ${c.weather.grid?.lat ?? "?"},${c.weather.grid?.lng ?? "?"}`,
+      method: `hourly value nearest to the requested time; grid ${c.weather.grid?.lat ?? "?"},${c.weather.grid?.lng ?? "?"}; wind x${WIND_FACTOR} (calibrated against Kuwait airport METAR)`,
       valid_at: w.t,
       data: {
         air_temp_c: w.temp,
@@ -227,7 +253,7 @@ export function snapshotRows(
       category: "marine",
       kind: mh.k,
       source: c.marine.source,
-      method: `hourly value nearest to the requested time; sea grid cell ${c.marine.grid?.lat ?? "?"},${c.marine.grid?.lng ?? "?"}`,
+      method: `hourly value nearest to the requested time; sea grid cell ${c.marine.grid?.lat ?? "?"},${c.marine.grid?.lng ?? "?"}; wave height = max(model, fetch-limited wind-sea estimate)`,
       valid_at: mh.t,
       data: {
         wave_height_m: mh.wave_h,
