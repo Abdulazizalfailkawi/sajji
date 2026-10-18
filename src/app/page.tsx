@@ -26,7 +26,7 @@ import { verdictFor } from "@/lib/verdict";
 import { compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
 import { saveDepthUnit, useDepthUnit, type DepthUnit } from "@/lib/depth";
 import { checkForUpdate } from "@/lib/update";
-import { tideState, turningPointsFromEvents, type TurnEvent } from "@/lib/marine/waqfa";
+import { tideNow, tideState, turningPointsFromEvents, type TurnEvent } from "@/lib/marine/waqfa";
 import { CYCLE_LABEL, cycleInfo, readCycleConfig } from "@/lib/tidecycle";
 import { dateKey, fmtDate, fmtDateTime, fmtTime } from "@/lib/time";
 import { normalizeName } from "@/lib/normalize";
@@ -251,6 +251,7 @@ export default function MarineHome() {
           : "calm";
   const seaLabel = seaLevel === "rough" ? t("رياح شديدة", "Rough") : seaLevel === "moderate" ? t("متوسط", "Moderate") : seaLevel === "calm" ? t("هادئ", "Calm") : "—";
   const verdict = verdictFor(c, viewing ? dayStart + 5 * H : now, viewing ? dayStart + 19 * H : now + 10 * H);
+  const tn = viewing ? null : tideNow(turns, now);
   const selState = sel != null ? tideState(usingManual ? [] : model.pts, turns, sel) : null;
 
   const dirLabel = (d: string | null) =>
@@ -441,6 +442,23 @@ export default function MarineHome() {
                 <div className="mt-1 text-[11px] text-muted">{t("توقع لهذا اليوم — يتحدّث مع الأيام", "Forecast for this day — it updates as the day gets closer")}</div>
               </div>
             ) : st.direction ? (
+              <>
+              {tn && (
+                <div className="mb-3 rounded-xl bg-black/25 px-3 py-2 text-base font-bold leading-snug">
+                  {tn.kind === "at_high"
+                    ? t("🌊 الحين مد عالي", "🌊 High tide now")
+                    : tn.kind === "at_low"
+                      ? t("🌊 الحين جزر", "🌊 Low tide now")
+                      : tn.kind === "rising"
+                        ? t("⬆️ الماي ياخذ (طالع)", "⬆️ Water taking (rising)")
+                        : t("⬇️ الماي يعطي (نازل)", "⬇️ Water giving (falling)")}
+                  <div className="mt-0.5 text-xs font-normal text-ink-2">
+                    {tn.kind === "at_high" || tn.kind === "at_low"
+                      ? t(`ذروته ${fmtTime(tn.turn.t, lang)}${tn.next ? ` · بعده ${tn.next.type === "high" ? "مد" : "جزر"} ${fmtTime(tn.next.t, lang)}` : ""}`, `Peak ${fmtTime(tn.turn.t, lang)}`)
+                      : t(`${tn.next!.type === "high" ? "المد العالي" : "الجزر"} بعد ${Math.floor(tn.minutes / 60)} س ${tn.minutes % 60} د (${fmtTime(tn.next!.t, lang)})`, `${tn.next!.type === "high" ? "High tide" : "Low tide"} in ${Math.floor(tn.minutes / 60)}h ${tn.minutes % 60}m (${fmtTime(tn.next!.t, lang)})`)}
+                  </div>
+                </div>
+              )}
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <div className={cn("flex items-center gap-1.5 text-4xl font-extrabold", dirColor(st.direction))}>
@@ -473,6 +491,7 @@ export default function MarineHome() {
                   )}
                 </div>
               </div>
+              </>
             ) : (
               <div className="text-sm text-muted">{t("بيانات المد غير متوفرة", "Tide data unavailable")}</div>
             )}

@@ -25,6 +25,7 @@
 
 import type { Extreme, Pt } from "./tide";
 import { heightAt } from "./tide";
+import { AT_PEAK_MIN } from "../../config/marine";
 
 export const WAQFA_RATE_M_PER_H = 0.05;
 export const WAQFA_MAX_HALF_MIN = 90;
@@ -181,4 +182,25 @@ export function smoothSeries(pts: Pt[], stepMin = 10): Pt[] {
   }
   out.push(pts[n - 1]);
   return out;
+}
+
+export type TideNow =
+  | { kind: "at_high" | "at_low"; turn: TurnEvent; minutes: number; next: TurnEvent | null }
+  | { kind: "rising" | "falling"; turn: null; minutes: number; next: TurnEvent };
+
+/**
+ * What the beginner sees: within `atPeakMin` minutes of a high/low turn it is
+ * "الحين مد عالي / جزر" (minutes is signed: negative = before the turn); otherwise
+ * the water is taking (rising) or giving (falling) and `minutes` is the time left
+ * to the next turn. All inputs are epoch ms, so the Kuwait/UTC offset never matters.
+ */
+export function tideNow(turns: TurnEvent[], at: number, atPeakMin = AT_PEAK_MIN): TideNow | null {
+  const sorted = [...turns].sort((a, b) => a.t - b.t);
+  const next = sorted.find((x) => x.t > at) ?? null;
+  const prev = [...sorted].reverse().find((x) => x.t <= at) ?? null;
+  const near = [prev, next].filter((x): x is TurnEvent => !!x).sort((a, b) => Math.abs(a.t - at) - Math.abs(b.t - at))[0];
+  if (near && Math.abs(near.t - at) <= atPeakMin * 60_000)
+    return { kind: near.type === "high" ? "at_high" : "at_low", turn: near, minutes: Math.round((at - near.t) / 60_000), next: near === next ? sorted[sorted.indexOf(near) + 1] ?? null : next };
+  if (!next) return null;
+  return { kind: next.type === "high" ? "rising" : "falling", turn: null, minutes: Math.round((next.t - at) / 60_000), next };
 }
