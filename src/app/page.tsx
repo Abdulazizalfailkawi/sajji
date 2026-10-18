@@ -523,22 +523,21 @@ export default function MarineHome() {
                             </div>
                           );
                         })
-                      ) : (
-                        <div className="text-sm text-muted">—</div>
-                      )}
+                      ) : null}
+                      {Array.from({ length: Math.max(0, 2 - list.length) }, (_, k) => (
+                        <div key={`none${k}`} className="mt-1.5">
+                          <div className="ltr text-lg font-bold leading-tight text-muted">— — : — —</div>
+                          <div className="text-[11px] leading-tight text-muted">
+                            {type === "high" ? t("ما في مد", "No high tide") : t("ما في جزر", "No low tide")}
+                            {list.length === 1 ? ` ${t("ثاني", "second")}` : ""} 
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   );
                 })}
               </div>
             ) : null}
-            {turns.length > 0 && (dayTurns.filter((x) => x.type === "high").length < 2 || dayTurns.filter((x) => x.type === "low").length < 2) && (
-              <div className="mt-2 rounded-xl bg-surface-2 px-3 py-2 text-[11px] leading-relaxed text-ink-2">
-                {t(
-                  "اليوم ما فيه إلا مد واحد أو جزر واحد بشكل واضح. هذا يصير بعض الأيام بسبب دورة القمر (المد الثاني ضعيف جدًا أو يطلع في اليوم اللي بعده).",
-                  "Only one clear high or low today. This happens on some days with the moon cycle (the second one is very weak or falls on the next day).",
-                )}
-              </div>
-            )}
             {open1 && (
               <div className="mt-3 space-y-2 border-t border-line/40 pt-3 text-sm">
                 {!viewing && st.turn && (
