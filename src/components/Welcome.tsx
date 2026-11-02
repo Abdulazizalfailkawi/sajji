@@ -59,9 +59,9 @@ export function Welcome() {
       icon: "🎣",
       title: t("شنو هو سجي؟", "What is Sajji?"),
       lines: [
-        t("يقولك البحر زين لو لا قبل لا تطلع.", "Tells you if the sea is good before you go."),
-        t("يعرض المد والجزر والريح والموج بلغة بسيطة.", "Shows tide, wind and waves in plain words."),
-        t("يسجّل رحلاتك وصيدك ويحسب أفضل وقت للصيد.", "Logs your trips and catches, and finds the best fishing time."),
+        t("يقولك إذا البحر زين قبل ما تطلع.", "Tells you if the sea is good before you go."),
+        t("يعرض لك المد والجزر والريح والموج بكلام بسيط.", "Shows tide, wind and waves in plain words."),
+        t("يسجّل رحلاتك وصيدك، ويحسب لك أفضل وقت للصيد.", "Logs your trips and catches, and finds the best fishing time."),
       ],
     },
     {
@@ -69,7 +69,7 @@ export function Welcome() {
       title: t("شنو معنى الألوان؟", "What do the colours mean?"),
       lines: [
         t("🟢 زين: الريح هادية والموج قليل، اطلع.", "🟢 Good: light wind, small waves."),
-        t("🟡 انتبه: ريح أو موج متوسط، طلعة قصيرة وقريبة.", "🟡 Careful: moderate wind or waves — stay short and close."),
+        t("🟡 انتبه: ريح أو موج متوسط، خلك قريب من الساحل وطلعة قصيرة.", "🟡 Careful: moderate wind or waves — stay short and close."),
         t("🔴 لا تطلع: ريح قوية أو موج عالي.", "🔴 Don't go: strong wind or high waves."),
       ],
     },
@@ -78,8 +78,8 @@ export function Welcome() {
       title: t("المد والجزر والحمل والفساد", "Tide, haml and fasad"),
       lines: [
         t("صعود الماء = المد طالع. نزول الماء = الجزر نازل.", "Water rising = tide coming in. Water falling = tide going out."),
-        t("الحمل: أيام المد القوي والتيار، والفساد: أيام المد الضعيف.", "Haml: strong tide and current days. Fasad: weak tide days."),
-        t("وقت الوقفة (بين المد والجزر) غالبًا أحسن وقت للهامور والبالول.", "The slack between tides is often best for hamour and balool."),
+        t("الحمل: أيام المد القوي والتيار القوي، والفساد: أيام المد الضعيف.", "Haml: strong tide and current days. Fasad: weak tide days."),
+        t("الوقفة (بين المد والجزر) غالبًا هي أحسن وقت للهامور والبالول.", "The slack between tides is often best for hamour and balool."),
       ],
     },
   ];

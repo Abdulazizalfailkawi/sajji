@@ -43,14 +43,9 @@ export function saveWindUnit(u: WindUnit) {
   } catch {}
 }
 
-/** Wave height in feet and inches, the way fishermen say it ("3 قدم و6 إنش", "9 إنش"). */
+/** Wave height in feet, one decimal ("3.6 قدم", "0.8 قدم"). */
 export function fmtWave(m: number | null | undefined, lang: "ar" | "en"): string {
   if (m == null || !Number.isFinite(m)) return "—";
-  const inches = Math.round((m * 39.3701));
-  const ft = Math.floor(inches / 12);
-  const rem = inches % 12;
-  const F = lang === "ar" ? "قدم" : "ft";
-  const I = lang === "ar" ? "إنش" : "in";
-  if (ft === 0) return `${rem} ${I}`;
-  return rem === 0 ? `${ft} ${F}` : `${ft} ${F} ${lang === "ar" ? "و" : ""}${rem} ${I}`;
+  const ft = Math.round(m * 3.28084 * 10) / 10;
+  return `${ft} ${lang === "ar" ? "قدم" : "ft"}`;
 }
