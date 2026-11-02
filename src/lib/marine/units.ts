@@ -43,10 +43,14 @@ export function saveWindUnit(u: WindUnit) {
   } catch {}
 }
 
-/** Wave height for people: centimetres under 1 m (so small hourly changes are visible) plus feet, like the bulletin. */
+/** Wave height in feet and inches, the way fishermen say it ("3 قدم و6 إنش", "9 إنش"). */
 export function fmtWave(m: number | null | undefined, lang: "ar" | "en"): string {
   if (m == null || !Number.isFinite(m)) return "—";
-  const ft = Math.round(m * 3.28084 * 10) / 10;
-  const main = m < 1 ? `${Math.round(m * 100)} ${lang === "ar" ? "سم" : "cm"}` : `${(Math.round(m * 10) / 10).toFixed(1)} ${lang === "ar" ? "م" : "m"}`;
-  return `${main} (${ft} ${lang === "ar" ? "قدم" : "ft"})`;
+  const inches = Math.round((m * 39.3701));
+  const ft = Math.floor(inches / 12);
+  const rem = inches % 12;
+  const F = lang === "ar" ? "قدم" : "ft";
+  const I = lang === "ar" ? "إنش" : "in";
+  if (ft === 0) return `${rem} ${I}`;
+  return rem === 0 ? `${ft} ${F}` : `${ft} ${F} ${lang === "ar" ? "و" : ""}${rem} ${I}`;
 }

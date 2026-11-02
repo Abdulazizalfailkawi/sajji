@@ -730,7 +730,7 @@ export default function MarineHome() {
                                 <td className="p-2 text-center">
                                   {h.wind != null ? fmtWind(h.wind, unit, lang).split(" ")[0] : "—"} <span className="text-muted">{compass(h.dir, lang)}</span>
                                 </td>
-                                <td className="p-2 text-center">{mh?.wave_h ?? "—"}</td>
+                                <td className="p-2 text-center">{mh?.wave_h != null ? fmtWave(mh.wave_h, lang) : "—"}</td>
                                 <td className="p-2 text-center">{h.temp ?? "—"}</td>
                               </tr>
                             );

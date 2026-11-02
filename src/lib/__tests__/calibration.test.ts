@@ -37,10 +37,11 @@ describe("wind & wave calibration", () => {
 
 import { fmtWave } from "../marine/units";
 describe("fmtWave", () => {
-  it("shows centimetres under 1 m (hourly changes are visible) and feet like the bulletin", () => {
-    expect(fmtWave(0.3, "ar")).toBe("30 سم (1 قدم)");
-    expect(fmtWave(0.26, "ar")).toBe("26 سم (0.9 قدم)");
-    expect(fmtWave(1.2, "ar")).toBe("1.2 م (3.9 قدم)");
+  it("feet and inches, like fishermen say it", () => {
+    expect(fmtWave(0.23, "ar")).toBe("9 إنش");
+    expect(fmtWave(0.3, "ar")).toBe("1 قدم");
+    expect(fmtWave(1.07, "ar")).toBe("3 قدم و6 إنش");
+    expect(fmtWave(0.9144, "ar")).toBe("3 قدم");
     expect(fmtWave(null, "ar")).toBe("—");
   });
 });
