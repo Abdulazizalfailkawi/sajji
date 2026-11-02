@@ -42,3 +42,11 @@ export function saveWindUnit(u: WindUnit) {
     localStorage.setItem("ft.windUnit", u);
   } catch {}
 }
+
+/** Wave height for people: centimetres under 1 m (so small hourly changes are visible) plus feet, like the bulletin. */
+export function fmtWave(m: number | null | undefined, lang: "ar" | "en"): string {
+  if (m == null || !Number.isFinite(m)) return "—";
+  const ft = Math.round(m * 3.28084 * 10) / 10;
+  const main = m < 1 ? `${Math.round(m * 100)} ${lang === "ar" ? "سم" : "cm"}` : `${(Math.round(m * 10) / 10).toFixed(1)} ${lang === "ar" ? "م" : "m"}`;
+  return `${main} (${ft} ${lang === "ar" ? "قدم" : "ft"})`;
+}

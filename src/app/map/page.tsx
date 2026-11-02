@@ -12,7 +12,7 @@ import { useI18n } from "@/lib/i18n";
 import { Card, Spinner, cn } from "@/components/ui";
 import { getConditions } from "@/lib/marine/client";
 import { PRESET_SPOTS } from "@/lib/marine/presets";
-import { fmtWind, compass, readWindUnit, type WindUnit } from "@/lib/marine/units";
+import { fmtWave, fmtWind, compass, readWindUnit, type WindUnit } from "@/lib/marine/units";
 import { turnsOf } from "@/lib/marine/client";
 import { tideNow } from "@/lib/marine/waqfa";
 import { verdictFor, type Verdict } from "@/lib/verdict";
@@ -218,7 +218,7 @@ export default function MapPage() {
               <div className="text-base font-bold">{verdictText(info.v.light)}</div>
               <div className="text-sm text-ink-2">
                 {info.v.maxWindKmh != null && `${t("ريح", "Wind")} ${fmtWind(info.v.maxWindKmh, unit, lang)}${info.v.windDir != null ? " " + compass(info.v.windDir, lang) : ""}`}
-                {info.v.maxWaveM != null && ` · ${t("موج", "Waves")} ${info.v.maxWaveM.toFixed(1)} ${t("م", "m")}`}
+                {info.v.maxWaveM != null && ` · ${t("موج", "Waves")} ${fmtWave(info.v.maxWaveM, lang)}`}
               </div>
               {info.tide && <div className="text-sm">🌊 {info.tide}</div>}
             </>

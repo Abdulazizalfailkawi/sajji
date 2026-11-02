@@ -24,7 +24,7 @@ import { KMC_MARINE_URL } from "@/lib/marine/stations";
 import { VerdictBanner } from "@/components/VerdictBanner";
 import { WindDays } from "@/components/WindDays";
 import { verdictFor } from "@/lib/verdict";
-import { compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
+import { fmtWave, compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
 import { saveDepthUnit, useDepthUnit, type DepthUnit } from "@/lib/depth";
 import { checkForUpdate } from "@/lib/update";
 import { tideNow, tideState, turningPointsFromEvents, type TurnEvent } from "@/lib/marine/waqfa";
@@ -108,7 +108,9 @@ export default function MarineHome() {
   }, []);
   const [setOpen, setSetOpen] = useState(false);
   const [upd, setUpd] = useState<string | null>(null);
-  const now = useNow(1000);
+  const [open1, setOpen1] = useState(false);
+  // seconds only tick while the details (waqfa countdown) are open; otherwise every 15 s keeps the phone light
+  const now = useNow(open1 ? 1000 : 15000);
   const [unit, setUnit] = useState<WindUnit>("kmh");
   const [spotId, setSpotId] = useState<string | null>(null);
   const [gpsPt, setGpsPt] = useState<{ lat: number; lng: number } | null>(null);
@@ -117,7 +119,6 @@ export default function MarineHome() {
   const [sel, setSel] = useState<number | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [markOpen, setMarkOpen] = useState(false);
-  const [open1, setOpen1] = useState(false);
   const [dayOff, setDayOff] = useState(0);
   const [open2, setOpen2] = useState(false);
   const [gpsErr, setGpsErr] = useState<string | null>(null);
@@ -208,6 +209,20 @@ export default function MarineHome() {
   useEffect(() => {
     void load();
   }, [load]);
+  // Keep "now" fresh: re-check every 5 min while the app is open (cached for 10 min,
+  // so this is cheap) and as soon as the app comes back to the foreground.
+  useEffect(() => {
+    if (!pt) return;
+    const tick = () => document.visibilityState === "visible" && navigator.onLine && void load();
+    const id = setInterval(tick, 5 * 60_000);
+    document.addEventListener("visibilitychange", tick);
+    window.addEventListener("online", tick);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", tick);
+      window.removeEventListener("online", tick);
+    };
+  }, [pt?.lat, pt?.lng, load]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const c = res?.data ?? null;
   const today = dateKey(new Date(now));
@@ -230,7 +245,7 @@ export default function MarineHome() {
   const viewMs = viewing ? dayStart + 12 * H : now;
   const refT = viewing ? sel ?? viewMs : now;
   const w = c ? hourAt(c.weather.hours, refT) : null;
-  const cur = viewing ? null : c?.current ?? null;
+  const cur = viewing || !c?.current || now - Date.parse(c.current.t) > 45 * 60_000 ? null : c.current; // a nowcast older than 45 min is not "now"
   const wx = cur ?? w;
   const m = c ? hourAt(c.marine.hours, refT) : null;
   const moon = moonAt(new Date(viewMs));
@@ -403,7 +418,7 @@ export default function MarineHome() {
           v={verdict}
           unit={unit}
           lang={lang}
-          when={viewing ? dayName(viewMs, lang) : ""}
+          when={viewing ? dayName(viewMs, lang) : c ? t(`آخر تحديث ${fmtTime(Date.parse(c.fetched_at), lang)}`, `Updated ${fmtTime(Date.parse(c.fetched_at), lang)}`) : ""}
         />
 
         {c && (c.marine.status === "error" || c.marine.status === "unavailable") && (
@@ -638,13 +653,7 @@ export default function MarineHome() {
                   <Waves className="size-3" /> {t("الموج", "Waves")}
                 </div>
                 <div className="text-lg font-extrabold text-white">
-                  {m?.wave_h != null ? (
-                    <bdi>
-                      {m.wave_h} {t("م", "m")}
-                    </bdi>
-                  ) : (
-                    "—"
-                  )}
+                  {m?.wave_h != null ? <bdi>{fmtWave(m.wave_h, lang)}</bdi> : "—"}
                 </div>
                 <div className="text-[11px] text-ink">{m?.wave_dir != null ? compass(m.wave_dir, lang) : ""}</div>
               </div>

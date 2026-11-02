@@ -2,7 +2,7 @@
 
 import type { Verdict } from "@/lib/verdict";
 import { knots } from "@/lib/verdict";
-import { compass, fmtWind, type WindUnit } from "@/lib/marine/units";
+import { compass, fmtWave, fmtWind, type WindUnit } from "@/lib/marine/units";
 import type { Light } from "@/config/marine";
 import { cn } from "@/components/ui";
 
@@ -28,7 +28,7 @@ export function VerdictBanner({ v, unit, lang, when }: { v: Verdict | null; unit
     const gust = v.maxGustKmh != null && v.maxGustKmh > v.maxWindKmh + 5 ? `، ${t("هبات", "gusts")} ${fmtWind(v.maxGustKmh, unit, lang)}` : "";
     reason.push(`${t("ريح", "Wind")} ${fmtWind(v.maxWindKmh, unit, lang)}${v.windDir != null ? " " + compass(v.windDir, lang) : ""}${gust}`);
   }
-  if (v.maxWaveM != null) reason.push(`${t("موج", "Waves")} ${v.maxWaveM.toFixed(1)} ${t("م", "m")}`);
+  if (v.maxWaveM != null) reason.push(`${t("موج", "Waves")} ${fmtWave(v.maxWaveM, lang)}`);
   return (
     <section className={cn("mb-3 rounded-2xl border p-4", BOX[v.light])} aria-live="polite">
       <div className="text-lg font-bold leading-snug">{title}</div>

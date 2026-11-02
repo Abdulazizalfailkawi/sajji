@@ -6,7 +6,7 @@
 
 import type { Conditions } from "@/lib/marine/types";
 import { kuwaitMidnight } from "@/lib/marine/client";
-import { compass, fmtWind, type WindUnit } from "@/lib/marine/units";
+import { compass, fmtWave, fmtWind, type WindUnit } from "@/lib/marine/units";
 import { verdictFor } from "@/lib/verdict";
 import { cn } from "@/components/ui";
 
@@ -40,7 +40,7 @@ export function WindDays({ c, now, unit, lang }: { c: Conditions; now: number; u
                   {compass(v.windDir, lang)} {Math.round(v.windDir)}°
                 </>
               )}
-              {v.maxWaveM != null ? ` · ${t("موج", "waves")} ${v.maxWaveM.toFixed(1)} ${t("م", "m")}` : ""}
+              {v.maxWaveM != null ? ` · ${t("موج", "waves")} ${fmtWave(v.maxWaveM, lang)}` : ""}
             </span>
           ) : (
             <span className="text-xs text-muted">{t("ما فيه بيانات", "No data")}</span>

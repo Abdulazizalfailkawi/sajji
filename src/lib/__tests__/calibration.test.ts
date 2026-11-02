@@ -34,3 +34,13 @@ describe("wind & wave calibration", () => {
     expect(waveLight(windSeaHeightM(25 * WIND_FACTOR))).not.toBe("green");
   });
 });
+
+import { fmtWave } from "../marine/units";
+describe("fmtWave", () => {
+  it("shows centimetres under 1 m (hourly changes are visible) and feet like the bulletin", () => {
+    expect(fmtWave(0.3, "ar")).toBe("30 سم (1 قدم)");
+    expect(fmtWave(0.26, "ar")).toBe("26 سم (0.9 قدم)");
+    expect(fmtWave(1.2, "ar")).toBe("1.2 م (3.9 قدم)");
+    expect(fmtWave(null, "ar")).toBe("—");
+  });
+});

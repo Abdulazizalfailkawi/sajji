@@ -10,7 +10,7 @@ import { cleanSeries, heightAt, type Pt } from "./tide";
 import { minutesToNearestTurn, tideState, turningPoints, type TurnEvent } from "./waqfa";
 import type { Conditions, MarineHour, WeatherHour } from "./types";
 
-const TTL_FORECAST = 30 * 60_000; // refresh forecasts after 30 min
+const TTL_FORECAST = 10 * 60_000; // refresh forecasts after 10 min (the "now" wind comes from a 15-min nowcast)
 const mem = new Map<string, { at: number; data: Conditions }>();
 
 function cacheKey(lat: number, lng: number, from: number, to: number) {
