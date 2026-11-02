@@ -22,9 +22,10 @@ describe("safety lights (40 hp boat)", () => {
     expect(waveLight(0.7)).toBe("yellow");
     expect(waveLight(1.2)).toBe("red");
   });
-  it("verdict is the worst of wind and waves", () => {
-    expect(verdictFor(mk(10, 12, 1.4), T0, T0 + 3600e3)?.light).toBe("red");
-    expect(verdictFor(mk(10, 12, 0.2), T0, T0 + 3600e3)?.light).toBe("green");
+  it("waves are hidden (SHOW_WAVES=false): the verdict follows the wind only", () => {
+    expect(verdictFor(mk(10, 12, 1.4), T0, T0 + 3600e3)?.light).toBe("green");
+    expect(verdictFor(mk(40, 45, 0.1), T0, T0 + 3600e3)?.light).toBe("red");
+    expect(verdictFor(mk(10, 12, 1.4), T0, T0 + 3600e3)?.maxWaveM).toBeNull();
     expect(verdictFor(null, T0, T0)).toBeNull();
   });
 });

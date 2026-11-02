@@ -1,7 +1,7 @@
 // The one-sentence "can I go out?" verdict for a small boat, from the hourly
 // wind and wave forecast. Thresholds live in src/config/marine.ts.
 
-import { KNOT_KMH, waveLight, windLight, worstLight, type Light } from "../config/marine";
+import { KNOT_KMH, SHOW_WAVES, waveLight, windLight, worstLight, type Light } from "../config/marine";
 import type { Conditions } from "./marine/types";
 
 export interface Verdict {
@@ -37,6 +37,7 @@ export function verdictFor(c: Conditions | null, from: number, to: number): Verd
     if (h.wave_h != null && (wave == null || h.wave_h > wave)) wave = h.wave_h;
   }
   const w = windLight(wind, gust);
+  if (!SHOW_WAVES) wave = null;
   const v = waveLight(wave);
   const light = worstLight(w, v);
   if (!light) return null;

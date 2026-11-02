@@ -16,7 +16,7 @@ import { fmtWave, fmtWind, compass, readWindUnit, type WindUnit } from "@/lib/ma
 import { turnsOf } from "@/lib/marine/client";
 import { tideNow } from "@/lib/marine/waqfa";
 import { verdictFor, type Verdict } from "@/lib/verdict";
-import { waveLight, windLight, type Light } from "@/config/marine";
+import { SHOW_WAVES, waveLight, windLight, type Light } from "@/config/marine";
 import { fmtTime } from "@/lib/time";
 
 interface GridPt {
@@ -114,10 +114,10 @@ export default function MapPage() {
         for (const c of catches) L.circleMarker([c.lat, c.lng], { radius: 5, color: "#fff", weight: 1, fillColor: "#7fb6f0", fillOpacity: 0.9 }).bindTooltip("🐟 " + new Date(c.at).toLocaleDateString(lang === "ar" ? "ar-KW-u-nu-latn" : "en-GB")).addTo(g.catches);
       if (show.sea && grid)
         for (const p of grid) {
-          const light = (windLight(p.wind, p.gust) && waveLight(p.wave) ? [windLight(p.wind, p.gust), waveLight(p.wave)] : [windLight(p.wind, p.gust) ?? waveLight(p.wave)]).filter(Boolean) as Light[];
+          const light = [windLight(p.wind, p.gust), SHOW_WAVES ? waveLight(p.wave) : null].filter(Boolean) as Light[];
           const worst: Light = light.includes("red") ? "red" : light.includes("yellow") ? "yellow" : "green";
           const rot = p.dir != null ? (p.dir + 180) % 360 : 0; // arrow points where the wind blows to
-          const html = `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;transform:translate(-50%,-50%)"><div style="width:30px;height:30px;border-radius:50%;background:${COLOR[worst]};opacity:.92;display:grid;place-items:center;border:2px solid #0b1b33"><div style="transform:rotate(${rot}deg);color:#0b1b33;font-weight:900;font-size:18px;line-height:18px">${p.dir != null ? "↑" : "•"}</div></div><div style="background:#0b1b33cc;color:#fff;border-radius:6px;padding:0 4px;font-size:10px;white-space:nowrap">${p.wind != null ? Math.round(p.wind) : "—"} · ${p.wave != null ? p.wave.toFixed(1) + "م" : "—"}</div></div>`;
+          const html = `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;transform:translate(-50%,-50%)"><div style="width:30px;height:30px;border-radius:50%;background:${COLOR[worst]};opacity:.92;display:grid;place-items:center;border:2px solid #0b1b33"><div style="transform:rotate(${rot}deg);color:#0b1b33;font-weight:900;font-size:18px;line-height:18px">${p.dir != null ? "↑" : "•"}</div></div><div style="background:#0b1b33cc;color:#fff;border-radius:6px;padding:0 4px;font-size:10px;white-space:nowrap">${p.wind != null ? Math.round(p.wind) : "—"}${SHOW_WAVES && p.wave != null ? " · " + p.wave.toFixed(1) + "م" : ""}</div></div>`;
           const mk = L.marker([p.lat, p.lng], { icon: L.divIcon({ className: "", html, iconSize: [0, 0] }) });
           mk.on("click", (e) => {
             L.DomEvent.stopPropagation(e);
@@ -176,7 +176,7 @@ export default function MapPage() {
       <div className="flex flex-wrap gap-2">
         {chip("spots", t("📍 المواقع", "📍 Spots"))}
         {chip("catches", t("🐟 صيدي", "🐟 My catches"))}
-        {chip("sea", t("🌬️ الريح والموج", "🌬️ Wind & waves"))}
+        {chip("sea", t("🌬️ الريح", "🌬️ Wind"))}
       </div>
       <div className="relative">
         <div ref={el} dir="ltr" className="isolate z-0 h-[62vh] min-h-[360px] w-full overflow-hidden rounded-2xl border border-line" />
@@ -189,8 +189,8 @@ export default function MapPage() {
       {show.sea && (
         <p className="text-[11px] text-muted">
           {gridErr
-            ? t("تعذر تحميل الريح والموج حالياً.", "Couldn't load wind and waves right now.")
-            : t(`الدوائر: لون السلامة (أسوأ قيمة بين الريح والموج). السهم اتجاه هبوب الريح. الرقم: الريح (${unit === "kmh" ? "كم/س" : unit === "kn" ? "عقدة" : "م/ث"}) · الموج بالمتر.`, "Circles: safety colour (worse of wind and waves). Arrow: direction the wind blows towards. Numbers: wind · wave height (m).")}
+            ? t("تعذر تحميل الريح حالياً.", "Couldn't load wind right now.")
+            : t(`الدوائر: لون السلامة حسب الريح. السهم اتجاه هبوب الريح. الرقم: الريح (${unit === "kmh" ? "كم/س" : unit === "kn" ? "عقدة" : "م/ث"}).`, "Circles: safety colour by wind. Arrow: direction the wind blows towards. Number: wind speed.")}
         </p>
       )}
 

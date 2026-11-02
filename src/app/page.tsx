@@ -24,7 +24,8 @@ import { KMC_MARINE_URL } from "@/lib/marine/stations";
 import { VerdictBanner } from "@/components/VerdictBanner";
 import { WindDays } from "@/components/WindDays";
 import { verdictFor } from "@/lib/verdict";
-import { fmtWave, compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
+import { SHOW_WAVES } from "@/config/marine";
+import { compass, fmtWind, readWindUnit, saveWindUnit, type WindUnit } from "@/lib/marine/units";
 import { saveDepthUnit, useDepthUnit, type DepthUnit } from "@/lib/depth";
 import { checkForUpdate } from "@/lib/update";
 import { tideNow, tideState, turningPointsFromEvents, type TurnEvent } from "@/lib/marine/waqfa";
@@ -247,7 +248,8 @@ export default function MarineHome() {
   const w = c ? hourAt(c.weather.hours, refT) : null;
   const cur = viewing || !c?.current || now - Date.parse(c.current.t) > 45 * 60_000 ? null : c.current; // a nowcast older than 45 min is not "now"
   const wx = cur ?? w;
-  const m = c ? hourAt(c.marine.hours, refT) : null;
+  const mRaw = c ? hourAt(c.marine.hours, refT) : null;
+  const m = mRaw && !SHOW_WAVES ? { ...mRaw, wave_h: null, wave_dir: null, wave_p: null, swell_h: null, swell_dir: null, swell_p: null, wind_wave_h: null } : mRaw;
   const moon = moonAt(new Date(viewMs));
   const sun = pt ? sunTimes(new Date(viewMs), pt.lat, pt.lng) : null;
   const warn = c ? hazards(c, viewing ? dayStart : now, viewing ? dayStart + 24 * H : now + 24 * H) : [];
@@ -421,7 +423,7 @@ export default function MarineHome() {
           when={viewing ? dayName(viewMs, lang) : c ? t(`آخر تحديث ${fmtTime(Date.parse(c.fetched_at), lang)}`, `Updated ${fmtTime(Date.parse(c.fetched_at), lang)}`) : ""}
         />
 
-        {c && (c.marine.status === "error" || c.marine.status === "unavailable") && (
+        {SHOW_WAVES && c && (c.marine.status === "error" || c.marine.status === "unavailable") && (
           <Notice tone="warn" className="mb-3">
             <div className="flex items-center justify-between gap-2">
               <span>{t("تعذر تحميل الموج.", "Couldn't load wave data.")}</span>
@@ -640,22 +642,13 @@ export default function MarineHome() {
             )}
             {open2 && (
               <>
-            <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="grid grid-cols-2 gap-2 text-center">
               <div className="rounded-xl border border-ocean/30 bg-ocean/10 px-2 py-2">
                 <div className="flex items-center justify-center gap-1 text-[11px] font-medium text-ocean">
                   <Wind className="size-3" /> {t("الرياح", "Wind")}
                 </div>
                 <div className="text-lg font-extrabold text-white">{wx?.wind != null ? fmtWind(wx.wind, unit, lang) : "—"}</div>
                 <div className="text-[11px] text-ink">{wx?.wind != null ? compass(wx.dir, lang) : ""}</div>
-              </div>
-              <div className="rounded-xl border border-ocean/30 bg-ocean/10 px-2 py-2">
-                <div className="flex items-center justify-center gap-1 text-[11px] font-medium text-ocean">
-                  <Waves className="size-3" /> {t("الموج", "Waves")}
-                </div>
-                <div className="text-lg font-extrabold text-white">
-                  {m?.wave_h != null ? <bdi>{fmtWave(m.wave_h, lang)}</bdi> : "—"}
-                </div>
-                <div className="text-[11px] text-ink">{m?.wave_dir != null ? compass(m.wave_dir, lang) : ""}</div>
               </div>
               <div className="rounded-xl border border-ocean/30 bg-ocean/10 px-2 py-2">
                 <div className="text-[11px] font-medium text-ocean">{t("حرارة الماء", "Water")}</div>
@@ -712,7 +705,6 @@ export default function MarineHome() {
                           <th className="p-2 text-start font-medium">{t("الوقت", "Time")}</th>
                           <th className="p-2 font-medium">{t("المد", "Tide")}</th>
                           <th className="p-2 font-medium">{t("رياح", "Wind")}</th>
-                          <th className="p-2 font-medium">{t("موج", "Wave")}</th>
                           <th className="p-2 font-medium">°C</th>
                         </tr>
                       </thead>
@@ -730,7 +722,6 @@ export default function MarineHome() {
                                 <td className="p-2 text-center">
                                   {h.wind != null ? fmtWind(h.wind, unit, lang).split(" ")[0] : "—"} <span className="text-muted">{compass(h.dir, lang)}</span>
                                 </td>
-                                <td className="p-2 text-center">{mh?.wave_h != null ? fmtWave(mh.wave_h, lang) : "—"}</td>
                                 <td className="p-2 text-center">{h.temp ?? "—"}</td>
                               </tr>
                             );

@@ -2,7 +2,7 @@
 // location/time window isn't requested repeatedly, plus helpers that turn a
 // response into environmental snapshot rows.
 
-import { WIND_FACTOR, calibrationFor, windSeaHeightM } from "../../config/marine";
+import { SHOW_WAVES, WIND_FACTOR, calibrationFor, windSeaHeightM } from "../../config/marine";
 import { moonAt, sunTimes } from "../astro";
 import { uuid } from "../ids";
 import type { EnvPurpose, EnvironmentObservation } from "../types";
@@ -304,7 +304,7 @@ export function hazards(c: Conditions, from: number, to: number): { key: string;
       ar: `رياح قوية متوقعة (حتى ${Math.round(maxWind)} كم/س، هبات ${Math.round(maxGust)} كم/س)`,
       en: `Strong wind forecast (up to ${Math.round(maxWind)} km/h, gusts ${Math.round(maxGust)} km/h)`,
     });
-  if (maxWave >= 1.5) out.push({ key: "waves", ar: `أمواج مرتفعة متوقعة (حتى ${maxWave.toFixed(1)} م)`, en: `High waves forecast (up to ${maxWave.toFixed(1)} m)` });
+  if (SHOW_WAVES && maxWave >= 1.5) out.push({ key: "waves", ar: `أمواج مرتفعة متوقعة (حتى ${maxWave.toFixed(1)} م)`, en: `High waves forecast (up to ${maxWave.toFixed(1)} m)` });
   if (storm) out.push({ key: "storm", ar: "احتمال عواصف رعدية", en: "Thunderstorms possible" });
   return out;
 }

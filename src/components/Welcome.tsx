@@ -60,7 +60,7 @@ export function Welcome() {
       title: t("شنو هو سجي؟", "What is Sajji?"),
       lines: [
         t("يقولك إذا البحر زين قبل ما تطلع.", "Tells you if the sea is good before you go."),
-        t("يعرض لك المد والجزر والريح والموج بكلام بسيط.", "Shows tide, wind and waves in plain words."),
+        t("يعرض لك المد والجزر والريح بكلام بسيط.", "Shows tide and wind in plain words."),
         t("يسجّل رحلاتك وصيدك، ويحسب لك أفضل وقت للصيد.", "Logs your trips and catches, and finds the best fishing time."),
       ],
     },
@@ -68,9 +68,9 @@ export function Welcome() {
       icon: "🚦",
       title: t("شنو معنى الألوان؟", "What do the colours mean?"),
       lines: [
-        t("🟢 زين: الريح هادية والموج قليل، اطلع.", "🟢 Good: light wind, small waves."),
-        t("🟡 انتبه: ريح أو موج متوسط، خلك قريب من الساحل وطلعة قصيرة.", "🟡 Careful: moderate wind or waves — stay short and close."),
-        t("🔴 لا تطلع: ريح قوية أو موج عالي.", "🔴 Don't go: strong wind or high waves."),
+        t("🟢 زين: الريح هادية، اطلع.", "🟢 Good: light wind."),
+        t("🟡 انتبه: ريح متوسطة، خلك قريب من الساحل وطلعة قصيرة.", "🟡 Careful: moderate wind — stay short and close."),
+        t("🔴 لا تطلع: ريح قوية.", "🔴 Don't go: strong wind."),
       ],
     },
     {

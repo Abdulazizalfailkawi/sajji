@@ -146,3 +146,10 @@ export function windSeaHeightM(windKmh: number | null | undefined, fetchKm = WAV
   const u = windKmh / 3.6;
   return Math.round(0.0016 * u * Math.sqrt((fetchKm * 1000) / 9.81) * 100) / 100;
 }
+
+/**
+ * Wave height is hidden everywhere (screen, safety verdict, map, tables) at the
+ * owner's request. The wave data and thresholds stay in the code; set this to
+ * true to bring them back.
+ */
+export const SHOW_WAVES = false;

@@ -15,6 +15,7 @@ import { useI18n } from "@/lib/i18n";
 import { getConditions, hourAt, turnsOf, type ConditionsResult } from "@/lib/marine/client";
 import { dateKey, fmtTime } from "@/lib/time";
 import { kuwaitMidnight } from "@/lib/marine/client";
+import { SHOW_WAVES } from "@/config/marine";
 
 const H = 3_600_000;
 
@@ -108,7 +109,7 @@ function BestTimes() {
       lat: spot.lat!,
       lng: spot.lng!,
       profile: profileFor(species?.name_ar),
-      cond: (tt) => ({ windKmh: hourAt(c.weather.hours, tt)?.wind ?? null, waveM: hourAt(c.marine.hours, tt)?.wave_h ?? null }),
+      cond: (tt) => ({ windKmh: hourAt(c.weather.hours, tt)?.wind ?? null, waveM: SHOW_WAVES ? hourAt(c.marine.hours, tt)?.wave_h ?? null : null }),
       personal,
     });
   }, [spot, c, model, dayStart, species, personal]);
@@ -344,7 +345,7 @@ function BestTimes() {
               {result.slots.some((s) => s.cond < 0.8) && (
                 <Notice tone="warn" className="mt-3">
                   <span className="flex items-start gap-1.5">
-                    <AlertTriangle className="mt-0.5 size-4 shrink-0" /> {t("فيه ساعات رياحها أو موجها مرتفع اليوم — التقييم نازل فيها.", "Some hours have strong wind or waves — their scores are lowered.")}
+                    <AlertTriangle className="mt-0.5 size-4 shrink-0" /> {t("فيه ساعات رياحها قوية اليوم — التقييم نازل فيها.", "Some hours have strong wind — their scores are lowered.")}
                   </span>
                 </Notice>
               )}
@@ -363,7 +364,7 @@ function BestTimes() {
                     <b className="text-white">{t("البالول والهامور: ", "Balool & hamour: ")}</b>
                     {t("القمة عند الوقفة نفسها (٣٠ دقيقة قبل وبعد)، والضوء يعطي بس شوي. والبالول يضاف له كمان وقت الغروب (ساعة قبل وساعة بعد).", "the peak is the slack itself (30 min either side); light adds only a little. Balool also gets sunset (an hour either side).")}
                   </p>
-                  <p>{t("بعدها ننزّل التقييم لو الرياح فوق ٢٥ كم/س أو الموج فوق ٠٫٨ م. ولو عندك ٨ صيدات أو أكثر من نفس النوع، نأخذ حالة المد وقت صيدك بالحسبان. ممكن تصيد بأوقات ثانية، لكن هذي القاعدة المجرّبة.", "Then we lower it for wind above 25 km/h or waves above 0.8 m. With 8+ catches of the same fish, your own tide history is blended in. You can still catch at other times — this is the tested rule.")}</p>
+                  <p>{t("بعدها ننزّل التقييم لو الرياح فوق ٢٥ كم/س. ولو عندك ٨ صيدات أو أكثر من نفس النوع، نأخذ حالة المد وقت صيدك بالحسبان. ممكن تصيد بأوقات ثانية، لكن هذي القاعدة المجرّبة.", "Then we lower it for wind above 25 km/h. With 8+ catches of the same fish, your own tide history is blended in. You can still catch at other times — this is the tested rule.")}</p>
                   <p className="text-warn">{t("هذا تقدير مبني على قواعد عامة ومد تقديري من نموذج، مو ضمان للصيد. استخدمه كدليل وجرّب بنفسك.", "This is an estimate from general rules and a modelled tide — not a guarantee. Use it as a guide.")}</p>
                 </Card>
               )}
