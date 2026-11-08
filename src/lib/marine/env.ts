@@ -27,6 +27,8 @@ export interface ResolvedEnv {
   wavePeriod: Prov<number> | null;
   seaTemp: Prov<number> | null;
   airTemp: Prov<number> | null;
+  pressure: Prov<number> | null; // hPa (mean sea level, model)
+  pressureChange: Prov<number> | null; // hPa over the previous 3 hours
   sunrise: Prov<string> | null;
   sunset: Prov<string> | null;
   snapshots: EnvironmentObservation[]; // rows used (for provenance display)
@@ -107,6 +109,8 @@ function resolve(rows: EnvironmentObservation[], manual: { tide: Tide | null; mo
     wavePeriod: first(rows, "marine", "wave_period_s", isNum),
     seaTemp: first(rows, "marine", "sea_temp_c", isNum),
     airTemp: first(rows, "weather", "air_temp_c", isNum),
+    pressure: first(rows, "weather", "pressure_hpa", isNum),
+    pressureChange: first(rows, "weather", "pressure_change_3h_hpa", isNum),
     sunrise: first(rows, "astronomy", "sunrise", isStr),
     sunset: first(rows, "astronomy", "sunset", isStr),
     snapshots: rows,

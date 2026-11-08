@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { evaluateAchievements } from "@/lib/achievements";
 import { StoreProvider, useStore } from "@/lib/db/store";
 import { I18nProvider } from "@/lib/i18n";
-import { catchesNeedingSnapshot, snapshotCatch } from "@/lib/marine/snapshots";
+import { backfillPressureCatch, backfillPressureTrip, catchesNeedingSnapshot, recordsNeedingPressure, snapshotCatch } from "@/lib/marine/snapshots";
 import { tripRows } from "@/lib/stats";
 import { BottomNav } from "./BottomNav";
 import { QuickCatch } from "./QuickCatch";
@@ -104,6 +104,10 @@ function SnapshotFiller() {
       try {
         const todo = catchesNeedingSnapshot(ref.current.ds).slice(0, 3);
         for (const c of todo) await snapshotCatch(ref.current, c);
+        // pressure for older records (a few per minute, newest first)
+        const need = recordsNeedingPressure(ref.current.ds);
+        for (const c of need.catches.slice(0, 2)) await backfillPressureCatch(ref.current, c);
+        for (const x of need.trips.slice(0, 2)) await backfillPressureTrip(ref.current, x);
       } finally {
         busy = false;
       }

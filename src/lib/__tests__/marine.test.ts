@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanSeries, findExtrema, heightAt, phaseAt, phaseToTide, surroundingExtrema } from "../marine/tide";
-import { getConditions, hourAt, snapshotRows, tideAt, turnsOf } from "../marine/client";
+import { getConditions, hourAt, pressureRow, snapshotRows, tideAt, turnsOf } from "../marine/client";
 import { fetchWeather, fetchMarine, tideFromMarine } from "../marine/providers";
 import type { Conditions, MarineHour, WeatherHour } from "../marine/types";
 import { catchEnv } from "../marine/env";
@@ -10,6 +10,7 @@ import { buildReport } from "../reports";
 import { buildIndex, speciesStats } from "../stats";
 import { cascadeDelete } from "../db/sync";
 import { newCatch, newTrip } from "../factory";
+import { catchPressure, pressureBand, trendGroup } from "../analyticsExtra";
 import { dateKey, kwParts } from "../time";
 import { hijriForDateKey, toHijri } from "../hijri";
 import { emptyDataset, type Dataset, type EnvironmentObservation, type Species } from "../types";
@@ -301,5 +302,63 @@ describe("providers & caching", () => {
     expect(c.stale).toBe(true);
     expect(c.data).not.toBeNull();
     expect(c.error).toMatch(/fetch/);
+  });
+});
+
+describe("barometric pressure with each catch", () => {
+  // pressure falls 1.5 hPa per hour: 1020 at T0 ... so a 3-hour change of -4.5 hPa
+  const withPressure = () => {
+    const c = cond();
+    c.weather.hours = c.weather.hours.map((h, i) => ({ ...h, pressure: 1020 - 1.5 * i }));
+    return c;
+  };
+  const at = new Date(T0 + 10 * H);
+  const ctx = { tripId: null, catchId: "c1", purpose: "catch" as const, lat: 29.17, lng: 48.12 };
+
+  it("the weather snapshot stores the pressure, its 3-hour change and trend", () => {
+    const w = snapshotRows(withPressure(), at, ctx).find((r) => r.category === "weather")!;
+    expect(w.data.pressure_hpa).toBe(1005);
+    expect(w.data.pressure_change_3h_hpa).toBe(-4.5);
+    expect(w.data.pressure_trend).toBe("falling_fast");
+  });
+
+  it("an older record gets a pressure-only row added (nothing replaced)", () => {
+    const row = pressureRow(withPressure(), at, { tripId: null, catchId: "c1", lat: 29.17, lng: 48.12 })!;
+    expect(row.category).toBe("weather");
+    expect(row.purpose).toBe("refresh");
+    expect(Object.keys(row.data)).toEqual(expect.arrayContaining(["pressure_hpa", "pressure_change_3h_hpa"]));
+    expect(row.data).not.toHaveProperty("wind_speed_kmh");
+    expect(pressureRow(cond(), at, { tripId: null, catchId: "c1", lat: 1, lng: 1 })).toBeNull(); // no pressure in the data
+  });
+
+  it("catchEnv reads pressure from the pressure-only row while keeping the older wind values", () => {
+    const ds = emptyDataset();
+    const c = newCatch(null, { id: "c1", caught_at: at.toISOString() });
+    ds.catches = [c];
+    const full = snapshotRows(cond(), at, ctx); // snapshot taken before pressure existed
+    const extra = pressureRow(withPressure(), at, { tripId: null, catchId: "c1", lat: 29.17, lng: 48.12 })!;
+    ds.environment_observations = [...full, extra].map((r) => ({ ...r, created_at: "x", updated_at: "x" })) as unknown as EnvironmentObservation[];
+    const e = catchEnv(ds, c);
+    expect(e.pressure?.value).toBe(1005);
+    expect(e.wind).not.toBeNull();
+  });
+
+  it("groups catches by level and trend, counting the ones without pressure", () => {
+    expect(pressureBand(1008)).toBe("<1010");
+    expect(pressureBand(1012)).toBe("1010–1015");
+    expect(pressureBand(1019)).toBe("1015–1020");
+    expect(pressureBand(1023)).toBe(">1020");
+    expect(trendGroup(-1.2)).toBe("falling");
+    expect(trendGroup(0.3)).toBe("steady");
+    const ds = emptyDataset();
+    const c1 = newCatch(null, { id: "c1", caught_at: at.toISOString() });
+    const c2 = newCatch(null, { id: "c2", caught_at: at.toISOString() });
+    ds.catches = [c1, c2];
+    ds.environment_observations = snapshotRows(withPressure(), at, ctx).map((r) => ({ ...r, created_at: "x", updated_at: "x" })) as unknown as EnvironmentObservation[];
+    const r = catchPressure(ds, ds.catches);
+    expect(r.withLevel).toBe(1);
+    expect(r.missing).toBe(1);
+    expect(r.trend.falling).toBe(1);
+    expect(r.bands["1000–1010".length ? "<1010" : "<1010"]).toBe(1);
   });
 });

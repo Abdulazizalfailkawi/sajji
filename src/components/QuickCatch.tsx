@@ -18,6 +18,7 @@ import { isActiveStatus } from "@/lib/types";
 import { Photo } from "./common";
 import { useToast } from "./Toast";
 import { Button, Field, Input, Notice, Select, Sheet, cn } from "./ui";
+import { snapshotCatch } from "@/lib/marine/snapshots";
 
 function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
   const r = Math.PI / 180;
@@ -126,6 +127,7 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
         technique_id: chosenTrip?.technique_id ?? null,
       });
       await save("catches", c);
+      void snapshotCatch(store, c); // sea conditions (incl. pressure) for this catch right away
       onClose();
       toast(
         chosenTrip

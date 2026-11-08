@@ -69,7 +69,7 @@ export function EnvPanel({ trip, c }: { trip: Trip | null; c?: Catch }) {
     for (const e of all) m.set(e.snapshot_id ?? e.id, [...(m.get(e.snapshot_id ?? e.id) ?? []), e]);
     return [...m.values()].sort((a, b) => b[0].fetched_at.localeCompare(a[0].fetched_at));
   }, [all]);
-  const hasAny = env.wind || env.wave || env.tidePhase || env.seaTemp;
+  const hasAny = env.wind || env.wave || env.tidePhase || env.seaTemp || env.pressure;
 
   const refetch = async () => {
     setBusy(true);
@@ -131,6 +131,16 @@ export function EnvPanel({ trip, c }: { trip: Trip | null; c?: Catch }) {
         <Line label={t("الموج", "Waves")} p={env.wave} render={() => <bdi>{env.wave!.value} {t("م", "m")}{env.wavePeriod ? ` · ${env.wavePeriod.value} ${t("ث", "s")}` : ""}</bdi>} />
         <Line label={t("حرارة الماء", "Sea temp")} p={env.seaTemp} render={() => <>{env.seaTemp!.value}°C</>} />
         <Line label={t("حرارة الجو", "Air temp")} p={env.airTemp} render={() => <>{env.airTemp!.value}°C</>} />
+        <Line
+          label={t("الضغط الجوي", "Pressure")}
+          p={env.pressure}
+          render={() => (
+            <bdi>
+              {Math.round(env.pressure!.value)} hPa
+              {env.pressureChange ? ` ${env.pressureChange.value < -0.9 ? "↓" : env.pressureChange.value > 0.9 ? "↑" : "→"} ${env.pressureChange.value > 0 ? "+" : ""}${env.pressureChange.value}` : ""}
+            </bdi>
+          )}
+        />
         {(env.sunrise || env.sunset) && (
           <div className="flex items-center justify-between gap-2 py-2 text-sm">
             <span className="flex items-center gap-1">

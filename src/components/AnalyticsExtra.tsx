@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { InlineBar } from "./charts";
 import { Card, Choice, N, Notice, SectionTitle, cn } from "./ui";
-import { TURN_BINS, catchTidePhases, catchesByTurn, depthBins, lurePerformance, speciesBySpot, targetPerformance, targetVsActual, tripStartPhase } from "@/lib/analyticsExtra";
+import { PRESSURE_BANDS, TURN_BINS, catchPressure, catchTidePhases, tripStartPressureTrend, catchesByTurn, depthBins, lurePerformance, speciesBySpot, targetPerformance, targetVsActual, tripStartPhase } from "@/lib/analyticsExtra";
 import { useStore } from "@/lib/db/store";
 import { useI18n } from "@/lib/i18n";
 import { MIN_SAMPLE, groupRows, pct, type TripRow } from "@/lib/stats";
@@ -24,6 +24,9 @@ export function AnalyticsExtra({ rows, catches }: { rows: TripRow[]; catches: Ca
   const turns = useMemo(() => catchesByTurn(ds, catches), [ds, catches]);
   const startPhase = useMemo(() => groupRows(rows, (r) => tripStartPhase(ds, r)), [ds, rows]);
   const matrix = useMemo(() => speciesBySpot(catches, idx), [catches, idx]);
+  const press = useMemo(() => catchPressure(ds, catches), [ds, catches]);
+  const pressTrips = useMemo(() => groupRows(rows, (r) => tripStartPressureTrend(ds, r)), [ds, rows]);
+  const trendLabel = (k: string) => ({ falling: t("ينخفض", "Falling"), steady: t("ثابت", "Steady"), rising: t("يرتفع", "Rising") })[k] ?? k;
   const phaseLabel = (k: string) => ({ rising: t("سجي", "Saji (rising)"), falling: t("ثبر", "Thabr (falling)"), waqfa: t("وقفة", "Waqfa") })[k] ?? k;
   const maxDepth = Math.max(1, ...depth.bins.map((b) => b.count));
   const phaseTotal = phases.counts.rising + phases.counts.falling + phases.counts.waqfa;
@@ -196,6 +199,57 @@ export function AnalyticsExtra({ rows, catches }: { rows: TripRow[]; catches: Ca
           ))}
           <p className="text-xs text-muted">{t(`${startPhase.missing} رحلة بدون بيانات مد عند البداية. يلزم ${MIN_SAMPLE} رحلات لكل فئة قبل استنتاج نمط، وحتى حينها هو ارتباط وليس سبباً.`, `${startPhase.missing} trips without tide data at start. ${MIN_SAMPLE}+ trips per group are needed before reading a pattern — and even then it's correlation, not cause.`)}</p>
         </div>
+      </Card>
+
+      <SectionTitle>{t("الضغط الجوي", "Barometric pressure")}</SectionTitle>
+      <Card className="space-y-3 text-sm">
+        {press.withLevel === 0 ? (
+          <p className="text-xs text-muted">{t(`ما فيه ضغط جوي مسجّل للصيدات بعد${press.missing ? ` (${press.missing} صيدة قيد التعبئة تلقائياً)` : ""}. يتخزن مع كل صيدة جديدة تلقائياً.`, `No pressure recorded for catches yet${press.missing ? ` (${press.missing} being filled in automatically)` : ""}. It is saved automatically with every new catch.`)}</p>
+        ) : (
+          <>
+            <div>
+              <div className="mb-1 text-xs text-muted">{t("الصيدات حسب اتجاه الضغط وقت الصيد (آخر 3 ساعات)", "Catches by pressure trend at catch time (previous 3 h)")}</div>
+              {(["falling", "steady", "rising"] as const).map((k) => (
+                <div key={k} className="mb-1.5">
+                  <div className="flex justify-between">
+                    <span>{trendLabel(k)}</span>
+                    <b>{press.trend[k]}</b>
+                  </div>
+                  <InlineBar value={press.trend[k]} max={Math.max(1, press.withTrend)} />
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="mb-1 text-xs text-muted">{t("الصيدات حسب مستوى الضغط (هكتوباسكال)", "Catches by pressure level (hPa)")}</div>
+              {PRESSURE_BANDS.map((k) => (
+                <div key={k} className="mb-1.5">
+                  <div className="flex justify-between">
+                    <span className="ltr">{k}</span>
+                    <b>{press.bands[k]}</b>
+                  </div>
+                  <InlineBar value={press.bands[k]} max={Math.max(1, press.withLevel)} />
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="mb-1 text-xs text-muted">{t("نجاح الرحلات حسب اتجاه الضغط عند البداية", "Trip success by pressure trend at trip start")}</div>
+              {pressTrips.groups.map((g) => (
+                <div key={g.key} className="flex justify-between">
+                  <span>{trendLabel(g.key)}</span>
+                  <span className="text-muted">
+                    {pct(g.successRate)} ({g.successful}/{g.trips}) {!g.sufficient && <span className="text-[10px] text-warn">{t("عينة صغيرة", "small")}</span>}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted">
+              {t(
+                `من ${press.withLevel} صيدة لها ضغط (${press.missing} بدون). الضغط من نموذج جوي مو قياس من موقعك. توزيع صيداتك لا يعني إن الضغط هو السبب: يلزم ${MIN_SAMPLE} رحلات لكل فئة قبل ما تعتمد على النسب، وحتى بعدها هذا ارتباط مو سبب.`,
+                `${press.withLevel} catches have pressure (${press.missing} without). Pressure is a weather-model value, not measured at your spot. The spread of your catches does not show pressure is the cause: you need ${MIN_SAMPLE} trips per group before trusting the rates, and even then it is correlation, not cause.`,
+              )}
+            </p>
+          </>
+        )}
       </Card>
 
       {matrix.spots.length > 0 && matrix.species.length > 0 && (

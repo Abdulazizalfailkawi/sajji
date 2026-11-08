@@ -5,11 +5,13 @@
 import { SHOW_WAVES, WIND_FACTOR, calibrationFor, windSeaHeightM } from "../../config/marine";
 import { moonAt, sunTimes } from "../astro";
 import { uuid } from "../ids";
+import { pressureAt } from "../pressure";
 import type { EnvPurpose, EnvironmentObservation } from "../types";
 import { cleanSeries, heightAt, type Pt } from "./tide";
 import { minutesToNearestTurn, tideState, turningPoints, type TurnEvent } from "./waqfa";
 import type { Conditions, MarineHour, WeatherHour } from "./types";
 
+const CACHE_V = 2; // 2: weather hours carry pressure
 const TTL_FORECAST = 10 * 60_000; // refresh forecasts after 10 min (the "now" wind comes from a 15-min nowcast)
 const mem = new Map<string, { at: number; data: Conditions }>();
 
@@ -61,7 +63,8 @@ async function getConditionsRaw(lat: number, lng: number, from: Date, to: Date, 
       if (raw) cached = JSON.parse(raw);
     } catch {}
   }
-  const fresh = cached && Date.now() - cached.at < TTL_FORECAST;
+  // A copy saved by an older version (before pressure was added) is not served as fresh: refetch it instead of showing "—".
+  const fresh = cached && (cached as { v?: number }).v === CACHE_V && Date.now() - cached.at < TTL_FORECAST;
   if (cached && fresh && !opts.force) return { data: cached.data, savedAt: cached.at, stale: false, fromCache: true, error: null };
   if (typeof navigator !== "undefined" && !navigator.onLine)
     return { data: cached?.data ?? null, savedAt: cached?.at ?? null, stale: !!cached, fromCache: !!cached, error: "OFFLINE" };
@@ -70,7 +73,7 @@ async function getConditionsRaw(lat: number, lng: number, from: Date, to: Date, 
     const r = await fetch(`/api/conditions?${q}`, { signal: AbortSignal.timeout(20_000) });
     const j = await r.json();
     if (!r.ok) throw new Error(j.error ?? `HTTP_${r.status}`);
-    const entry = { at: Date.now(), data: j as Conditions };
+    const entry = { at: Date.now(), v: CACHE_V, data: j as Conditions };
     mem.set(key, entry);
     try {
       localStorage.setItem(key, JSON.stringify(entry));
@@ -239,6 +242,7 @@ export function snapshotRows(
         cloud_pct: w.cloud,
         precip_prob_pct: w.pprob,
         weather_code: w.code,
+        ...pressureData(c, t),
       },
     });
   } else
@@ -313,4 +317,41 @@ export function hazards(c: Conditions, from: number, to: number): { key: string;
 export function kuwaitMidnight(ms: number): number {
   const D = 86_400_000;
   return Math.floor((ms + 3 * 3_600_000) / D) * D - 3 * 3_600_000;
+}
+
+/** pressure fields stored with a snapshot (hPa, mean sea level, model) and its 3-hour change */
+function pressureData(c: Conditions, at: number): Record<string, number | string | null> {
+  const p = pressureAt(c.weather.hours, at);
+  return p ? { pressure_hpa: p.hpa, pressure_change_3h_hpa: p.delta3h, pressure_trend: p.trend } : {};
+}
+
+/**
+ * A pressure-only weather row for a record that already has a snapshot without
+ * pressure (taken before pressure existed). It is ADDED, never replacing anything.
+ */
+export function pressureRow(
+  c: Conditions | null,
+  at: Date,
+  ctx: { tripId: string | null; catchId: string | null; lat: number | null; lng: number | null },
+): Row | null {
+  if (!c) return null;
+  const data = pressureData(c, at.getTime());
+  if (!("pressure_hpa" in data)) return null;
+  const w = hourAt(c.weather.hours, at.getTime());
+  return {
+    id: uuid(),
+    trip_id: ctx.tripId,
+    catch_id: ctx.catchId,
+    snapshot_id: uuid(),
+    purpose: "refresh",
+    fetched_at: c.fetched_at,
+    lat: ctx.lat,
+    lng: ctx.lng,
+    category: "weather",
+    kind: w?.k ?? "forecast",
+    source: c.weather.source,
+    method: "barometric pressure (mean sea level) added later from the same weather model; hourly value nearest to the record time",
+    valid_at: w?.t ?? at.toISOString(),
+    data,
+  };
 }
