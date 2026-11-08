@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, Moon, Sunrise, Sunset, Waves } from "lucide-react";
 import { Badge, Card, Empty, Notice, PageHeader, Select, Spinner, cn } from "@/components/ui";
+import { SolunarCard } from "@/components/SolunarCard";
 import { MAIN_SPECIES, MIN_PERSONAL, profileFor, scoreDay, type BestWindow, type Why } from "@/lib/besttimes";
 import { catchTidePhases } from "@/lib/analyticsExtra";
 import { useStore } from "@/lib/db/store";
@@ -341,6 +342,8 @@ function BestTimes() {
                   )}
                 </Card>
               )}
+
+              {spot && <SolunarCard dayStart={dayStart} lat={spot.lat!} lng={spot.lng!} windows={result.windows} />}
 
               {result.slots.some((s) => s.cond < 0.8) && (
                 <Notice tone="warn" className="mt-3">
