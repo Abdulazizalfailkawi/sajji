@@ -17,6 +17,7 @@ export interface WeatherHour {
   rh: number | null; // %
   cloud: number | null; // %
   pprob: number | null; // %
+  pressure?: number | null; // hPa, mean sea level (model)
   code: number | null; // WMO weather code
 }
 
@@ -70,6 +71,7 @@ export interface CurrentWeather {
   gust: number | null;
   rh: number | null;
   cloud: number | null;
+  pressure?: number | null;
   code: number | null;
 }
 

@@ -98,7 +98,7 @@ export async function fetchWeather(w: Window, now: number): Promise<{ block: Blo
     historical_forecast: "https://historical-forecast-api.open-meteo.com/v1/forecast",
     era5: "https://archive-api.open-meteo.com/v1/archive",
   }[endpoint];
-  const hourly = "temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,relative_humidity_2m,cloud_cover,weather_code" + (endpoint === "era5" ? "" : ",precipitation_probability");
+  const hourly = "temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,relative_humidity_2m,cloud_cover,pressure_msl,weather_code" + (endpoint === "era5" ? "" : ",precipitation_probability");
   const q = new URLSearchParams({
     latitude: w.lat.toFixed(2),
     longitude: w.lng.toFixed(2),
@@ -108,7 +108,7 @@ export async function fetchWeather(w: Window, now: number): Promise<{ block: Blo
     hourly,
     daily: "sunrise,sunset",
   });
-  if (w.wantCurrent && endpoint === "forecast") q.set("current", "temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,relative_humidity_2m,cloud_cover,weather_code");
+  if (w.wantCurrent && endpoint === "forecast") q.set("current", "temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,relative_humidity_2m,cloud_cover,pressure_msl,weather_code");
   const source = {
     forecast: "Open-Meteo Weather API (best-match forecast models)",
     historical_forecast: "Open-Meteo Historical Forecast API (archived model runs)",
@@ -130,6 +130,7 @@ export async function fetchWeather(w: Window, now: number): Promise<{ block: Blo
         gust: num(arr(h, "wind_gusts_10m")[i]),
         rh: num(arr(h, "relative_humidity_2m")[i]),
         cloud: num(arr(h, "cloud_cover")[i]),
+        pressure: num(arr(h, "pressure_msl")[i]),
         pprob: num(arr(h, "precipitation_probability")[i]),
         code: num(arr(h, "weather_code")[i]),
       }))
@@ -137,7 +138,7 @@ export async function fetchWeather(w: Window, now: number): Promise<{ block: Blo
         const ms = Date.parse(x.t);
         return ms >= w.from - 3_600_000 && ms <= w.to + 3_600_000;
       });
-    const av = availability(hours, ["temp", "wind", "dir", "gust", "rh", "cloud", "pprob"]);
+    const av = availability(hours, ["temp", "wind", "dir", "gust", "rh", "cloud", "pprob", "pressure"]);
     if (endpoint === "era5") delete av.pprob;
     const c = j.current as Record<string, unknown> | undefined;
     const current: Conditions["current"] =
@@ -151,6 +152,7 @@ export async function fetchWeather(w: Window, now: number): Promise<{ block: Blo
             gust: num(c.wind_gusts_10m),
             rh: num(c.relative_humidity_2m),
             cloud: num(c.cloud_cover),
+            pressure: num(c.pressure_msl),
             code: num(c.weather_code),
             kind: "forecast",
             source: "Open-Meteo current conditions (model nowcast, not an on-site measurement)",

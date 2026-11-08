@@ -6,7 +6,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, ArrowDown, ArrowUp, ChevronDown, ExternalLink, Fish, LocateFixed, Sparkles, MapPinPlus, Settings as SettingsIcon, MapPin, PencilLine, Plus, RefreshCw, Sunrise, Sunset, Timer, Waves, Wind } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, ChevronDown, ExternalLink, Fish, Gauge, LocateFixed, Sparkles, MapPinPlus, Settings as SettingsIcon, MapPin, PencilLine, Plus, RefreshCw, Sunrise, Sunset, Timer, Waves, Wind } from "lucide-react";
 import { KindBadge } from "@/components/EnvPanel";
 import { LocationForm } from "@/components/LocationForm";
 import { TideChart } from "@/components/TideChart";
@@ -38,6 +38,7 @@ import { useIsAdmin } from "@/lib/admin";
 import { SaveSpotSheet } from "@/components/SaveSpotSheet";
 import { PushSettings } from "@/components/PushSettings";
 import { kuwaitMidnight } from "@/lib/marine/client";
+import { pressureAt } from "@/lib/pressure";
 
 const H = 3_600_000;
 const STALE_MS = 6 * H;
@@ -248,6 +249,7 @@ export default function MarineHome() {
   const w = c ? hourAt(c.weather.hours, refT) : null;
   const cur = viewing || !c?.current || now - Date.parse(c.current.t) > 45 * 60_000 ? null : c.current; // a nowcast older than 45 min is not "now"
   const wx = cur ?? w;
+  const pr = c ? pressureAt(c.weather.hours, refT) : null;
   const mRaw = c ? hourAt(c.marine.hours, refT) : null;
   const m = mRaw && !SHOW_WAVES ? { ...mRaw, wave_h: null, wave_dir: null, wave_p: null, swell_h: null, swell_dir: null, swell_p: null, wind_wave_h: null } : mRaw;
   const moon = moonAt(new Date(viewMs));
@@ -642,7 +644,7 @@ export default function MarineHome() {
             )}
             {open2 && (
               <>
-            <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="grid grid-cols-3 gap-2 text-center">
               <div className="rounded-xl border border-ocean/30 bg-ocean/10 px-2 py-2">
                 <div className="flex items-center justify-center gap-1 text-[11px] font-medium text-ocean">
                   <Wind className="size-3" /> {t("الرياح", "Wind")}
@@ -655,7 +657,31 @@ export default function MarineHome() {
                 <div className="text-lg font-extrabold text-white">{m?.sst != null ? `${m.sst}°` : "—"}</div>
                 <div className="text-[11px] text-ink">{wx?.temp != null ? <>{t("الجو", "Air")} <bdi>{wx.temp}°</bdi></> : ""}</div>
               </div>
+              <div className="rounded-xl border border-ocean/30 bg-ocean/10 px-2 py-2">
+                <div className="flex items-center justify-center gap-1 text-[11px] font-medium text-ocean">
+                  <Gauge className="size-3" /> {t("الضغط الجوي", "Pressure")}
+                </div>
+                <div className="text-lg font-extrabold text-white">
+                  {pr ? (
+                    <>
+                      <bdi>{pr.hpa}</bdi> <span className="text-xs font-semibold">hPa</span>
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </div>
+                <div className="text-[11px] text-ink">
+                  {pr?.trend ? (pr.trend.startsWith("rising") ? "↑ " : pr.trend.startsWith("falling") ? "↓ " : "→ ") : ""}
+                  {pr?.trend === "rising_fast" ? t("يرتفع بسرعة", "Rising fast") : pr?.trend === "rising" ? t("يرتفع", "Rising") : pr?.trend === "falling" ? t("ينخفض", "Falling") : pr?.trend === "falling_fast" ? t("ينخفض بسرعة", "Falling fast") : pr?.trend === "steady" ? t("ثابت", "Steady") : ""}
+                </div>
+              </div>
             </div>
+            {pr?.trend === "falling_fast" && (
+              <div className="mt-2 flex items-start gap-1.5 rounded-xl bg-warn/10 px-3 py-2 text-xs text-warn">
+                <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+                <span>{t(`الضغط نزل ${Math.abs(pr.delta3h ?? 0)} هكتوباسكال خلال 3 ساعات — الجو ممكن يتغير (رياح أو عاصفة)، تابع النشرة.`, `Pressure dropped ${Math.abs(pr.delta3h ?? 0)} hPa in 3 h — the weather may change (wind or a storm); keep an eye on the forecast.`)}</span>
+              </div>
+            )}
             {warn.length > 0 && (
               <div className="mt-2 flex items-start gap-1.5 rounded-xl bg-warn/10 px-3 py-2 text-xs text-warn">
                 <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
@@ -681,6 +707,18 @@ export default function MarineHome() {
                       </>
                     )}{" "}
                     <KindBadge kind={m?.k ?? "unavailable"} />
+                  </div>
+                )}
+                {pr && (
+                  <div>
+                    {t("الضغط الجوي", "Pressure")} <bdi>{pr.hpa} hPa</bdi>
+                    {pr.delta3h != null && (
+                      <>
+                        {" · "}
+                        {t("التغير خلال 3 ساعات", "change in 3 h")} <bdi>{pr.delta3h > 0 ? "+" : ""}{pr.delta3h}</bdi> hPa
+                      </>
+                    )}{" "}
+                    <span className="text-muted">({t("نموذج جوي، مو قياس من موقعك", "weather model, not measured at your spot")})</span>
                   </div>
                 )}
                 {wx?.temp != null && (
