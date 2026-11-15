@@ -24,6 +24,7 @@ export async function identifyFish(
   species: Species[],
   lang: "ar" | "en",
   context?: { location?: string; technique?: string; depth_m?: number },
+  opts: { signal?: AbortSignal; timeoutMs?: number } = {},
 ): Promise<AiSuggestion> {
   if (typeof navigator !== "undefined" && !navigator.onLine) throw new AiError("OFFLINE");
   const image = await imageForAi(photo);
@@ -33,9 +34,15 @@ export async function identifyFish(
     const { data } = await sb.auth.getSession();
     if (data.session) headers.Authorization = `Bearer ${data.session.access_token}`;
   }
+  // a hard limit so the scan screen can never hang; the caller can also cancel
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 40_000);
+  const onAbort = () => ctrl.abort();
+  opts.signal?.addEventListener("abort", onAbort);
   let res: Response;
   try {
     res = await fetch("/api/identify", {
+      signal: ctrl.signal,
       method: "POST",
       headers,
       body: JSON.stringify({
@@ -46,7 +53,12 @@ export async function identifyFish(
       }),
     });
   } catch {
+    if (opts.signal?.aborted) throw new AiError("CANCELLED");
+    if (ctrl.signal.aborted) throw new AiError("TIMEOUT");
     throw new AiError("OFFLINE");
+  } finally {
+    clearTimeout(timer);
+    opts.signal?.removeEventListener("abort", onAbort);
   }
   const j = await res.json().catch(() => ({}));
   if (!res.ok) throw new AiError(j.error ?? `HTTP_${res.status}`);

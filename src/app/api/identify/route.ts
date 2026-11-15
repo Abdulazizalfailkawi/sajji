@@ -212,7 +212,9 @@ async function askOpenRouter(imageB64: string, userText: string): Promise<{ mode
     body: JSON.stringify({
       model: OPENROUTER_MODEL,
       temperature: 0.2,
-      max_tokens: 4000,
+      max_tokens: 800,
+      // a name needs no long chain of thought; thinking made some photos time out
+      reasoning: { enabled: false },
       messages: [
         { role: "system", content: `${SYSTEM}
 

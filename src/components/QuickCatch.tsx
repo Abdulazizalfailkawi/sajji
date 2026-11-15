@@ -57,6 +57,7 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
   const [fish, setFish] = useState("");
   const [ai, setAi] = useState<{ suggestion: AiSuggestion; top: string | null; conf: number | null } | null>(null);
   const [aiNote, setAiNote] = useState<string | null>(null);
+  const aiCtl = useRef<AbortController | null>(null);
   const [loc, setLoc] = useState<string | null>(null);
   const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
   const [gpsBusy, setGpsBusy] = useState(false);
@@ -126,10 +127,12 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
   const runAi = async (media: Media) => {
     setStep("scan");
     setAiNote(null);
+    const ctl = new AbortController();
+    aiCtl.current = ctl;
     try {
       const blob = await loadMediaBlob(media); // the row addPhoto just returned (the store may not hold it yet)
       if (!blob) throw new AiError("NO_PHOTO");
-      const s = await identifyFish(blob, ds.species, lang, { location: spotRow?.name, technique: tech ? name(idx.techById.get(tech)) : undefined });
+      const s = await identifyFish(blob, ds.species, lang, { location: spotRow?.name, technique: tech ? name(idx.techById.get(tech)) : undefined }, { signal: ctl.signal });
       const top = s.image_quality === "not_a_fish" ? null : s.candidates[0] ?? null;
       if (top) {
         setFish(top.name_ar);
@@ -141,11 +144,15 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
     } catch (e) {
       const code = (e as Error).message;
       setAiNote(
-        code === "AI_NO_CREDIT"
+        code === "CANCELLED"
+          ? null
+          : code === "TIMEOUT"
+            ? t("الذكاء الاصطناعي تأخر — اختر النوع بنفسك أو جرّب مرة ثانية", "The AI took too long — pick the fish yourself or try again")
+            : code === "AI_NO_CREDIT"
           ? t("رصيد الذكاء الاصطناعي خلص — اختر النوع بنفسك", "AI credit is used up — pick the fish yourself")
           : code === "AI_RATE_LIMITED"
             ? t("الذكاء الاصطناعي مزدحم — اختر النوع بنفسك أو جرّب بعد دقيقة", "AI is busy — pick it yourself or try in a minute")
-            : t("تعذر التعرّف — اختر النوع بنفسك", "Couldn't identify — pick the fish yourself"),
+              : t(`تعذر التعرّف (${code}) — اختر النوع بنفسك`, `Couldn't identify (${code}) — pick the fish yourself`),
       );
     } finally {
       setStep("result");
@@ -381,6 +388,9 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
             <Loader2 className="size-5 animate-spin text-mint" /> {t("قاعد أتعرف على السمكة…", "Identifying the fish…")}
           </div>
           <div className="text-[13px] text-muted">{t("أشوف الشكل واللون والزعانف", "Looking at shape, colour and fins")}</div>
+          <button type="button" onClick={() => aiCtl.current?.abort()} className="glass mt-2 h-11 rounded-full px-6 text-sm font-bold">
+            {t("تخطّي — أختار بنفسي", "Skip — I'll pick it")}
+          </button>
         </div>
       )}
     </>
