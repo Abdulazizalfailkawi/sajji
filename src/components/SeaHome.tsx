@@ -4,7 +4,7 @@
 // hero card with moving waves and a bobbing boat, the 7-day strip with
 // haml / fasad, and the wind / pressure / cycle tiles.
 
-import { Camera, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Camera, Clock, ShieldCheck, TriangleAlert } from "lucide-react";
 import type { Light } from "@/config/marine";
 import type { Cycle } from "@/lib/tidecycle";
 import { cn } from "./ui";
@@ -49,6 +49,8 @@ export function SeaHero(p: {
   waqfaSub: string;
   /** is the sea suitable for a small boat, from the wind (null = no data) */
   suit?: { light: Light; label: string; sub: string } | null;
+  /** best time to go out today / on the chosen day (null label = none found) */
+  best?: { label: string; ok: boolean } | null;
 }) {
   return (
     <section className="glass relative mb-4 overflow-hidden rounded-[26px] px-[18px] pb-[52px] pt-[18px] shadow-[0_14px_30px_rgb(0_0_0/0.28)]">
@@ -68,16 +70,26 @@ export function SeaHero(p: {
           {p.waqfaSub && <div className="mt-1 inline-block rounded-[10px] bg-ocean/15 px-2.5 py-0.5 text-[13px] font-bold text-ocean">{p.waqfaSub}</div>}
         </div>
       </div>
-      {p.suit && (
-        <div
-          className={cn(
-            "relative z-[1] mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-full py-1 pe-3 ps-2 text-[13px] font-bold ring-1 ring-current/25",
-            p.suit.light === "green" ? "bg-mint/15 text-mint" : p.suit.light === "yellow" ? "bg-warn/15 text-warn" : "bg-bad/15 text-bad",
+      {(p.suit || p.best) && (
+        <div className="relative z-[1] mt-2.5 flex flex-wrap gap-1.5">
+          {p.suit && (
+            <div
+              className={cn(
+                "inline-flex max-w-full items-center gap-1.5 rounded-full py-1 pe-3 ps-2 text-[13px] font-bold ring-1 ring-current/25",
+                p.suit.light === "green" ? "bg-mint/15 text-mint" : p.suit.light === "yellow" ? "bg-warn/15 text-warn" : "bg-bad/15 text-bad",
+              )}
+            >
+              {p.suit.light === "green" ? <ShieldCheck className="size-4 shrink-0" /> : <TriangleAlert className="size-4 shrink-0" />}
+              <span className="truncate">{p.suit.label}</span>
+              {p.suit.sub && <span className="truncate text-xs font-medium opacity-80">· {p.suit.sub}</span>}
+            </div>
           )}
-        >
-          {p.suit.light === "green" ? <ShieldCheck className="size-4 shrink-0" /> : <TriangleAlert className="size-4 shrink-0" />}
-          <span className="truncate">{p.suit.label}</span>
-          {p.suit.sub && <span className="truncate text-xs font-medium opacity-80">· {p.suit.sub}</span>}
+          {p.best && (
+            <div className={cn("inline-flex max-w-full items-center gap-1.5 rounded-full py-1 pe-3 ps-2 text-[13px] font-bold ring-1 ring-current/25", p.best.ok ? "bg-ocean/15 text-ocean" : "bg-white/10 text-muted")}>
+              <Clock className="size-4 shrink-0" />
+              <span className="truncate">{p.best.label}</span>
+            </div>
+          )}
         </div>
       )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 overflow-hidden" aria-hidden="true">

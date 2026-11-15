@@ -36,6 +36,7 @@ import { PushSettings } from "@/components/PushSettings";
 import { kuwaitMidnight } from "@/lib/marine/client";
 import { pressureAt } from "@/lib/pressure";
 import { verdictFor } from "@/lib/verdict";
+import { bestWindow } from "@/lib/bestWindow";
 
 const H = 3_600_000;
 const STALE_MS = 6 * H;
@@ -221,6 +222,13 @@ export default function MarineHome() {
           .join(" · "),
       }
     : null;
+  // best time to go out: the longest calm stretch of the day (from now, today)
+  const bw = c && c.weather.hours.length ? bestWindow(c.weather.hours.map((h) => ({ t: Date.parse(h.t), wind: h.wind, gust: h.gust, pressure: h.pressure })), viewing ? dayStart : now, dayStart + 24 * H) : null;
+  const best = c && c.weather.hours.length
+    ? bw
+      ? { ok: true, label: bw.allDay ? (viewing ? t("أفضل وقت: طول اليوم", "Best: all day") : t("أفضل وقت: باقي اليوم", "Best: rest of the day")) : t(`أفضل وقت: ${fmtTime(bw.start, lang)} – ${fmtTime(bw.end, lang)}`, `Best: ${fmtTime(bw.start, lang)} – ${fmtTime(bw.end, lang)}`) }
+      : { ok: false, label: viewing ? t("ما فيه وقت مناسب هاليوم", "No good window this day") : t("ما فيه وقت مناسب اليوم", "No good window today") }
+    : null;
   const cfg = readCycleConfig();
   const spotName = gpsPt ? t("موقعي", "my location") : spot ? (lang === "ar" ? spot.name : spot.name_en || spot.name) : "";
   const hourNow = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kuwait", hour: "numeric", hourCycle: "h23" }).format(new Date(now)));
@@ -373,6 +381,7 @@ export default function MarineHome() {
             waqfaLabel={viewing ? t("أول وقفة", "First slack") : inWaqfa ? t("تنتهي الوقفة", "Slack ends") : t("الوقفة الجاية", "Next slack")}
             waqfaTime={waqfaAt ? fmtTime(waqfaAt, lang) : "—"}
             suit={suit}
+            best={best}
             waqfaSub={viewing ? (nextTurn ? (nextTurn.type === "high" ? t("أعلى مد", "High tide") : t("أدنى جزر", "Low tide")) : "") : waqfaAt ? remain(waqfaAt - now, lang) : ""}
           />
 
