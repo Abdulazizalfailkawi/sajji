@@ -25,6 +25,8 @@ export interface Post {
   comments: number;
   liked: boolean;
   mine: boolean;
+  /** only returned for my own posts */
+  visibility?: "public" | "private";
 }
 
 export interface Comment {
@@ -80,6 +82,13 @@ export async function signedUrls(paths: string[]): Promise<Record<string, string
   return out;
 }
 
+/** My own posts (public and private) for the profile grid. */
+export async function fetchMyPosts(): Promise<Post[]> {
+  const { data, error } = await client().rpc("community_my_posts", { p_limit: 200 });
+  if (error) throw new Error(friendly(error));
+  return ((data ?? []) as Post[]).map((p) => ({ ...p, likes: Number(p.likes), comments: Number(p.comments) }));
+}
+
 export interface NewPost {
   photo: Blob; // any image: it is resized and stripped of metadata (incl. GPS) before upload
   body: string;
@@ -87,6 +96,8 @@ export interface NewPost {
   weight: number | null;
   place: string | null; // the label the user chose to show, or null
   catchId?: string | null;
+  /** public = shown in المجتمع; private = only on my profile */
+  visibility?: "public" | "private";
 }
 
 export async function createPost(userId: string, p: NewPost): Promise<void> {
@@ -108,6 +119,7 @@ export async function createPost(userId: string, p: NewPost): Promise<void> {
     photo_path,
     thumb_path: up2.error ? null : thumb_path,
     catch_id: p.catchId ?? null,
+    visibility: p.visibility ?? "public",
   });
   if (error) {
     await sb.storage.from("community").remove([photo_path, thumb_path]);
