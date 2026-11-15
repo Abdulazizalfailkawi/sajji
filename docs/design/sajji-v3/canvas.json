@@ -1,0 +1,31 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-11-15T12:00:00Z" },
+  "title": "سجي — التصميم الجديد",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "App.dc.html": { "x": 0, "y": 0, "w": 390, "h": 844, "title": "جرّب هنا — النموذج التفاعلي كامل", "is_interactive": true },
+    "SeaScreen.dc.html": { "x": 490, "y": 0, "w": 390, "h": 1300, "title": "1 · البحر (الرئيسية)", "is_interactive": true },
+    "CameraScreen.dc.html": { "x": 980, "y": 0, "w": 390, "h": 844, "title": "2 · سجّل صيدة — الكاميرا", "is_interactive": true },
+    "ScanScreen.dc.html": { "x": 1470, "y": 0, "w": 390, "h": 844, "title": "3 · الذكاء الاصطناعي يتعرف", "is_interactive": true },
+    "ResultScreen.dc.html": { "x": 1960, "y": 0, "w": 390, "h": 844, "title": "4 · النتيجة والحفظ", "is_interactive": true },
+    "MineScreen.dc.html": { "x": 2450, "y": 0, "w": 390, "h": 1060, "title": "5 · صيدي", "is_interactive": true },
+    "InsightScreen.dc.html": { "x": 2940, "y": 0, "w": 390, "h": 1060, "title": "6 · صيدي — أفضل وقت للهامور", "is_interactive": true },
+    "MeScreen.dc.html": { "x": 3430, "y": 0, "w": 390, "h": 1000, "title": "7 · حسابي (مثل إنستقرام)", "is_interactive": true },
+    "PostScreen.dc.html": { "x": 3920, "y": 0, "w": 390, "h": 844, "title": "8 · صورة منشورة", "is_interactive": true },
+    "AddPickScreen.dc.html": { "x": 4410, "y": 0, "w": 390, "h": 844, "title": "9 · أضف صورة — سلفي أو ألبوم", "is_interactive": true },
+    "AddPostScreen.dc.html": { "x": 4900, "y": 0, "w": 390, "h": 844, "title": "10 · انشر صورتك", "is_interactive": true },
+    "Main.dc.html": { "x": 0, "y": 1700, "w": 390, "h": 1340, "title": "قديم: البحر — داكن", "is_interactive": true },
+    "Light.dc.html": { "x": 490, "y": 1700, "w": 390, "h": 1340, "title": "قديم: البحر — فاتح", "is_interactive": true },
+    "Quick.dc.html": { "x": 980, "y": 1700, "w": 390, "h": 844, "title": "قديم: سجّل صيدة", "is_interactive": true },
+    "Catches.dc.html": { "x": 1470, "y": 1700, "w": 390, "h": 844, "title": "قديم: صيدي", "is_interactive": true },
+    "Me.dc.html": { "x": 1960, "y": 1700, "w": 390, "h": 844, "title": "قديم: أنا", "is_interactive": true }
+  },
+  "order": ["App.dc.html", "SeaScreen.dc.html", "CameraScreen.dc.html", "ScanScreen.dc.html", "ResultScreen.dc.html", "MineScreen.dc.html", "InsightScreen.dc.html", "MeScreen.dc.html", "PostScreen.dc.html", "AddPickScreen.dc.html", "AddPostScreen.dc.html", "Main.dc.html", "Light.dc.html", "Quick.dc.html", "Catches.dc.html", "Me.dc.html"],
+  "notes": {
+    "t1": { "x": 0, "y": -220, "text": "سجي — التصميم الجديد · كل الواجهات جنب بعض · البيانات تجريبية", "kind": "title1", "maxW": 5290 },
+    "t2": { "x": 0, "y": 1500, "text": "التصميم القديم (للمقارنة)", "kind": "title1", "maxW": 2350 }
+  },
+  "designSystems": []
+}

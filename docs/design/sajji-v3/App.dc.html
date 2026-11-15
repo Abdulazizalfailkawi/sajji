@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>سجي — النموذج التفاعلي</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.sj-scroll{scrollbar-width:none}
+.sj-scroll::-webkit-scrollbar{display:none}
+.sj-tap{cursor:pointer;transition:transform .15s ease}
+.sj-tap:active{transform:scale(.97)}
+@keyframes sjspin{to{transform:rotate(360deg)}}
+@keyframes sjscan{0%{top:14%}50%{top:80%}100%{top:14%}}
+@keyframes sjwave{from{transform:translateX(0)}to{transform:translateX(-390px)}}
+@keyframes sjbob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-5px) rotate(3deg)}}
+@keyframes sjsail{0%{left:12%}50%{left:62%}100%{left:12%}}
+@keyframes sjpulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes sjup{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+</style>
+</helmet>
+<div style="width: 390px; height: {{ rootH }}px; box-sizing: border-box; position: relative; overflow: hidden; direction: rtl; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; color: #EEF4FF; background: radial-gradient(130% 55% at 85% 0%, #17375F 0%, #0B1626 55%, #08111F 100%)">
+
+<div aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden">
+<img src="bg-bridge-full.jpg" alt="" style="position: absolute; top: -40px; left: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; object-position: center bottom; filter: blur(24px) saturate(1.2) brightness(0.55)">
+<img src="bg-bridge-full.jpg" alt="" style="position: absolute; top: 0; left: 0; width: 100%; height: auto; display: block; filter: blur(1px) saturate(1.1) brightness(0.8); -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%)">
+<div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,17,31,0.5) 0%, rgba(8,17,31,0.15) 30%, rgba(8,17,31,0.2) 55%, rgba(8,17,31,0.8) 100%)"></div>
+</div>
+
+<div class="sj-scroll" style="position: absolute; inset: 0 0 0 0; overflow-y: auto">
+
+<!-- ================= البحر ================= -->
+<sc-if value="{{ isSea }}" hint-placeholder-val="{{ true }}">
+<div style="padding: 18px 16px 120px; display: flex; flex-direction: column; gap: 16px; text-shadow: 0 1px 10px rgba(0,0,0,0.45)">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; align-items: center; gap: 10px">
+<img src="sajji-mark.svg" alt="شعار سجي" width="52" height="52" style="display: block; width: 52px; height: 52px; margin: -6px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35))">
+<div>
+<div style="font-size: 20px; font-weight: 700; line-height: 1.1">سجي</div>
+<div style="font-size: 12px; color: #B7C7DE">مساء الخير يا بو فهد</div>
+</div>
+</div>
+<div style="height: 36px; padding: 0 12px; border-radius: 18px; background: rgba(10,22,40,0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8CC4FF" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+الفنطاس
+</div>
+</div>
+
+<!-- البطاقة الرئيسية -->
+<section style="position: relative; overflow: hidden; border-radius: 26px; padding: 18px 18px 52px; background: rgba(10,22,40,0.5); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 14px 30px rgba(0,0,0,0.28)">
+<div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 16px">
+<div style="flex: 1 1 0; min-width: 0">
+<div style="display: flex; align-items: center; gap: 6px">
+<span style="width: 8px; height: 8px; border-radius: 50%; background: #5FD3A8; animation: sjpulse 1.6s ease-in-out infinite"></span>
+<span style="font-size: 13px; font-weight: 600; color: #B7C7DE; white-space: nowrap">{{ heroKicker }}</span>
+</div>
+<div style="font-size: 36px; font-weight: 700; line-height: 1.25; margin-top: 2px">{{ heroTitle }}</div>
+<span style="display: inline-block; margin-top: 2px; padding: 3px 11px; border-radius: 10px; font-size: 13px; font-weight: 700; background: {{ dayTagBg }}; color: {{ dayTagFg }}; text-shadow: none">{{ dayPhase }}</span>
+</div>
+<div style="width: 1px; align-self: stretch; background: rgba(255,255,255,0.16)"></div>
+<div style="flex: 1 1 0; min-width: 0">
+<div style="font-size: 13px; color: #B7C7DE">{{ waqfaLabel }}</div>
+<div style="font-size: 30px; font-weight: 700; line-height: 1.25; white-space: nowrap">{{ waqfaTime }}</div>
+<div style="display: inline-block; margin-top: 4px; padding: 3px 10px; border-radius: 10px; background: rgba(140,196,255,0.16); font-size: 13px; font-weight: 700; color: #8CC4FF; text-shadow: none">{{ waqfaSub }}</div>
+</div>
+</div>
+<div style="position: absolute; inset-inline: 0; bottom: 0; height: 48px; overflow: hidden" aria-hidden="true">
+<svg width="780" height="60" viewBox="0 0 780 60" style="position: absolute; left: 0; bottom: -8px; animation: sjwave 9s linear infinite"><path d="{{ wave1 }}" fill="#8CC4FF" fill-opacity="0.22"/></svg>
+<div style="position: absolute; bottom: 14px; left: 12%; width: 54px; height: 34px; animation: sjsail 26s ease-in-out infinite">
+<svg width="54" height="34" viewBox="0 0 54 34" style="display: block; transform-origin: 50% 90%; animation: sjbob 2.6s ease-in-out infinite" aria-hidden="true">
+<path d="M14 6h22" stroke="#DCE7F5" stroke-width="2" stroke-linecap="round"/>
+<path d="M17 6v12M33 6v12" stroke="#DCE7F5" stroke-width="1.6"/>
+<path d="M38 4l7-4M40 6l8-3" stroke="#DCE7F5" stroke-width="1" stroke-linecap="round" opacity="0.8"/>
+<rect x="21" y="11" width="9" height="8" rx="1.5" fill="#B7C7DE"/>
+<rect x="8" y="12" width="5" height="7" rx="1.5" fill="#1B2A44"/>
+<path d="M3 19h47c1.5 0 2 1.5 1 2.6L46 28H9L3.5 21C2.8 20.2 2.5 19 3 19z" fill="#F4F8FF"/>
+<path d="M6 24h42" stroke="#8CC4FF" stroke-width="1.6"/>
+</svg>
+</div>
+<svg width="780" height="60" viewBox="0 0 780 60" style="position: absolute; left: 0; bottom: -8px; animation: sjwave 6s linear infinite reverse"><path d="{{ wave2 }}" fill="#5FD3A8" fill-opacity="0.2"/></svg>
+</div>
+</section>
+
+<!-- التواريخ -->
+<div>
+<div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px">
+<div style="font-size: 15px; font-weight: 700">الأيام الجاية</div>
+<div style="font-size: 12px; color: #B7C7DE"><span style="color: #5FD3A8">● حمل</span> · <span style="color: #F5C453">● فساد</span></div>
+</div>
+<div class="sj-scroll" style="display: flex; gap: 8px; overflow-x: auto; margin-inline: -16px; padding: 2px 16px 4px">
+<sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+<button class="sj-tap" onClick="{{ d.pick }}" style="flex-shrink: 0; width: 66px; padding: 10px 0 9px; border-radius: 20px; border: 1px solid {{ d.border }}; background: {{ d.bg }}; color: {{ d.fg }}; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 3px">
+<span style="font-size: 11px; font-weight: 600">{{ d.dayName }}</span>
+<span style="font-size: 21px; font-weight: 700; line-height: 1.1">{{ d.dateNum }}</span>
+<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="{{ d.moonDim }}"/><path d="{{ d.moon }}" fill="{{ d.moonLit }}"/></svg>
+<span style="font-size: 11px; font-weight: 700; color: {{ d.tagFg }}">{{ d.phase }}</span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<!-- المنحنى -->
+<section style="border-radius: 24px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 16px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<div style="font-size: 16px; font-weight: 700">المد والجزر</div>
+<div style="font-size: 12px; color: #B7C7DE">{{ dayFull }}</div>
+</div>
+<svg viewBox="0 0 326 140" width="100%" height="140" style="display: block; margin-top: 10px" aria-label="منحنى المد والجزر">
+<defs><linearGradient id="sjTideFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8CC4FF" stop-opacity="0.45"/><stop offset="1" stop-color="#8CC4FF" stop-opacity="0"/></linearGradient></defs>
+<line x1="0" y1="20" x2="326" y2="20" stroke="#2A4468" stroke-dasharray="2 6"/>
+<line x1="0" y1="120" x2="326" y2="120" stroke="#2A4468" stroke-dasharray="2 6"/>
+<path d="{{ areaPath }}" fill="url(#sjTideFill)"/>
+<path d="{{ tidePath }}" fill="none" stroke="#8CC4FF" stroke-width="3" stroke-linecap="round"/>
+<g opacity="{{ nowOpacity }}">
+<line x1="{{ nowX }}" y1="6" x2="{{ nowX }}" y2="132" stroke="#EEF4FF" stroke-opacity="0.45" stroke-dasharray="2 4"/>
+<circle cx="{{ nowX }}" cy="{{ nowY }}" r="11" fill="#EEF4FF" fill-opacity="0.18"/>
+<circle cx="{{ nowX }}" cy="{{ nowY }}" r="6" fill="#EEF4FF" stroke="#0B1626" stroke-width="2"/>
+</g>
+</svg>
+<div style="display: flex; justify-content: space-between; font-size: 11px; color: #B7C7DE; margin-top: 2px">
+<span>12 ص</span><span>6 ص</span><span>12 م</span><span>6 م</span><span>12 ص</span>
+</div>
+<div style="margin-top: 14px; display: flex; gap: 6px">
+<sc-for list="{{ extremes }}" as="e" hint-placeholder-count="4">
+<div style="flex: 1 1 0; min-width: 0; border-radius: 16px; background: rgba(255,255,255,0.05); padding: 10px 6px; text-align: center">
+<div style="font-size: 11px; font-weight: 700; color: {{ e.color }}">{{ e.label }}</div>
+<div style="font-size: 15px; font-weight: 700; white-space: nowrap">{{ e.time }}</div>
+<div style="font-size: 11px; color: #B7C7DE">{{ e.height }} م</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<!-- الرياح والضغط والحمل -->
+<section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="border-radius: 22px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10.5" stroke="#2A4468"/><g transform="rotate({{ windRot }} 12 12)"><path d="M12 5v14M12 5l-4 4M12 5l4 4" stroke="#8CC4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+<div style="font-size: 22px; font-weight: 700; line-height: 1.1">{{ wind }}</div>
+<div style="font-size: 11px; color: #B7C7DE; text-align: center">كم/س · {{ windDir }}</div>
+</div>
+<div style="border-radius: 22px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px">
+<svg width="40" height="34" viewBox="0 0 36 24" fill="none" aria-hidden="true"><path d="M4 20A14 14 0 0 1 32 20" stroke="#2A4468" stroke-width="4" stroke-linecap="round"/><path d="M4 20A14 14 0 0 1 32 20" stroke="#5FD3A8" stroke-width="4" stroke-linecap="round" stroke-dasharray="{{ pDash }} 100"/></svg>
+<div style="font-size: 22px; font-weight: 700; line-height: 1.1">{{ pressure }}</div>
+<div style="font-size: 11px; color: #B7C7DE">hPa · {{ pTrend }}</div>
+</div>
+<div style="border-radius: 22px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px">
+<svg width="34" height="34" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="#2A4468"/><path d="{{ dayMoon }}" fill="#EEF4FF"/></svg>
+<div style="font-size: 22px; font-weight: 700; line-height: 1.1; color: {{ dayTagFg }}">{{ dayPhase }}</div>
+<div style="font-size: 11px; color: #B7C7DE">{{ currentText }}</div>
+</div>
+</section>
+
+<!-- سجّل صيدة -->
+<button class="sj-tap" onClick="{{ openCam }}" style="position: relative; overflow: hidden; border: 0; border-radius: 26px; padding: 18px 18px; background: linear-gradient(120deg, #8CC4FF 0%, #6FD6C0 100%); color: #0B1626; font-family: inherit; display: flex; align-items: center; gap: 14px; text-align: start; box-shadow: 0 14px 30px rgba(95,211,168,0.25)">
+<div style="width: 56px; height: 56px; border-radius: 18px; background: #0B1626; display: grid; place-items: center; flex-shrink: 0">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8CC4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L8 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+</div>
+<div style="flex-grow: 1">
+<div style="font-size: 19px; font-weight: 700">سجّل صيدة</div>
+<div style="font-size: 13px; font-weight: 500">صوّرها بس — يعرف نوعها ويحفظ كل شي</div>
+</div>
+<span style="padding: 4px 9px; border-radius: 9px; background: #0B1626; color: #5FD3A8; font-size: 12px; font-weight: 700">AI</span>
+</button>
+
+</div>
+</sc-if>
+
+<!-- ================= صيدي ================= -->
+<sc-if value="{{ isMine }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 18px 16px 120px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<div style="font-size: 26px; font-weight: 700">صيدي</div>
+<div style="font-size: 13px; color: #B7C7DE">نوفمبر 2026</div>
+</div>
+
+<section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="border-radius: 18px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 12px; text-align: center"><div style="font-size: 24px; font-weight: 700">{{ statTotal }}</div><div style="font-size: 12px; color: #B7C7DE">صيدة</div></div>
+<div style="border-radius: 18px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 12px; text-align: center"><div style="font-size: 24px; font-weight: 700">{{ statSpecies }}</div><div style="font-size: 12px; color: #B7C7DE">أنواع</div></div>
+<div style="border-radius: 18px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 12px; text-align: center"><div style="font-size: 20px; font-weight: 700; line-height: 1.45">{{ statMethod }}</div><div style="font-size: 12px; color: #B7C7DE">أكثر طريقة</div></div>
+</section>
+
+<div class="sj-scroll" style="display: flex; gap: 6px; overflow-x: auto; margin-inline: -16px; padding-inline: 16px">
+<sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+<button class="sj-tap" onClick="{{ f.pick }}" style="flex-shrink: 0; height: 40px; padding: 0 18px; border-radius: 20px; border: 1px solid {{ f.border }}; background: {{ f.bg }}; color: {{ f.fg }}; font-family: inherit; font-size: 14px; font-weight: 700; white-space: nowrap">{{ f.name }}</button>
+</sc-for>
+<button class="sj-tap" onClick="{{ toggleFOther }}" style="flex-shrink: 0; height: 40px; padding: 0 14px; border-radius: 20px; border: 1px dashed {{ fOtherBorder }}; background: rgba(10,22,40,0.45); color: {{ fOtherFg }}; font-family: inherit; font-size: 14px; font-weight: 700; white-space: nowrap; display: flex; align-items: center; gap: 6px">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+نوع ثاني
+</button>
+</div>
+
+<sc-if value="{{ showFOther }}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 20px; background: rgba(10,22,40,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(140,196,255,0.22); padding: 12px; display: flex; flex-direction: column; gap: 10px; animation: sjup .25s ease">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="font-size: 13px; font-weight: 600; color: #B7C7DE">اختر اسم السمكة (اختياري)</div>
+<button class="sj-tap" onClick="{{ toggleFOther }}" aria-label="إغلاق" style="width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.08); color: #EEF4FF; display: grid; place-items: center">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</button>
+</div>
+<div style="position: relative">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B7C7DE" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="position: absolute; right: 14px; top: 15px"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+<input type="text" value="{{ fText }}" onChange="{{ typeF }}" placeholder="اكتب اسم السمكة أو اختر من تحت" aria-label="اسم السمكة" style="width: 100%; box-sizing: border-box; height: 48px; border-radius: 14px; border: 1px solid rgba(140,196,255,0.3); background: #0B1626; color: #EEF4FF; font-family: inherit; font-size: 15px; padding: 0 42px 0 14px; outline: none">
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{ fOtherOpts }}" as="o" hint-placeholder-count="6">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.14); background: rgba(10,22,40,0.6); color: #DCE7F5; font-family: inherit; font-size: 13px; font-weight: 600">{{ o.name }}</button>
+</sc-for>
+</div>
+<sc-if value="{{ canUseF }}" hint-placeholder-val="{{ false }}">
+<button class="sj-tap" onClick="{{ useF }}" style="height: 44px; border-radius: 14px; border: 0; background: rgba(140,196,255,0.16); color: #8CC4FF; font-family: inherit; font-size: 14px; font-weight: 700">اعرض «{{ fText }}»</button>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ noCatchFor }}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 18px; background: rgba(10,22,40,0.5); border: 1px dashed rgba(140,196,255,0.3); padding: 16px; text-align: center; font-size: 14px; color: #DCE7F5">ما عندك صيدات {{ filter }} للحين — أول ما تسجل وحدة تطلع هني</div>
+</sc-if>
+
+<sc-if value="{{ hasInsight }}" hint-placeholder-val="{{ false }}">
+<section style="border-radius: 24px; padding: 16px; background: linear-gradient(150deg, rgba(95,211,168,0.20), rgba(95,211,168,0.04)); border: 1px solid rgba(95,211,168,0.45); animation: sjup .35s ease">
+<div style="display: flex; align-items: center; gap: 8px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5FD3A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg>
+<div style="font-size: 15px; font-weight: 700">متى يطلع لك {{ filter }}؟</div>
+</div>
+<div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px">
+<div>
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>حمل</span><span style="font-weight: 700">{{ insHaml }}٪</span></div>
+<div style="height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); margin-top: 4px"><div style="height: 8px; border-radius: 4px; background: #5FD3A8; width: {{ insHaml }}%"></div></div>
+</div>
+<div>
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>فساد</span><span style="font-weight: 700">{{ insFasad }}٪</span></div>
+<div style="height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); margin-top: 4px"><div style="height: 8px; border-radius: 4px; background: #F5C453; width: {{ insFasad }}%"></div></div>
+</div>
+</div>
+<div style="margin-top: 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="border-radius: 14px; background: rgba(11,22,38,0.5); padding: 10px 12px"><div style="font-size: 11px; color: #B7C7DE">أغلبها وقت</div><div style="font-size: 16px; font-weight: 700">{{ insWater }}</div></div>
+<div style="border-radius: 14px; background: rgba(11,22,38,0.5); padding: 10px 12px"><div style="font-size: 11px; color: #B7C7DE">أغلبها وقت</div><div style="font-size: 16px; font-weight: 700">{{ insBand }}</div></div>
+</div>
+<div style="margin-top: 10px; font-size: 12px; color: #B7C7DE">محسوبة من {{ insCount }} صيدات — كل ما سجّلت أكثر تصير أدق</div>
+</section>
+</sc-if>
+<sc-if value="{{ noInsight }}" hint-placeholder-val="{{ true }}">
+<div style="border-radius: 18px; border: 1px dashed rgba(140,196,255,0.3); padding: 12px 14px; font-size: 13px; color: #B7C7DE">اختر سمكة من فوق، وأقولك أفضل وقت تطلع لك فيه</div>
+</sc-if>
+
+<sc-for list="{{ shown }}" as="c" hint-placeholder-count="4">
+<section style="border-radius: 22px; background: rgba(10,22,40,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.14); padding: 10px; display: flex; gap: 12px">
+<div style="width: 84px; height: 100px; border-radius: 16px; overflow: hidden; flex-shrink: 0; background: linear-gradient(180deg, {{ c.g1 }}, {{ c.g2 }})">
+<svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display: block" aria-hidden="true"><circle cx="{{ c.sx }}" cy="{{ c.sy }}" r="11" fill="{{ c.sun }}"/><rect x="0" y="66" width="100" height="34" fill="#06101E" fill-opacity="0.45"/><g fill="#0A1424" fill-opacity="0.9"><circle cx="64" cy="40" r="9"/><path d="M48 100V72c0-10 7-17 16-17s16 7 16 17v28z"/><path d="M12 66c7-8 18-9 27-4l7-5-2 8 2 8-7-5c-9 6-20 5-27-2z"/><path d="M42 63l12 4-2 5-12-4z"/></g></svg>
+</div>
+<div style="flex-grow: 1; min-width: 0; padding-top: 2px">
+<div style="display: flex; align-items: center; gap: 8px">
+<div style="font-size: 17px; font-weight: 700">{{ c.fish }}</div>
+<span style="margin-inline-start: auto; padding: 2px 9px; border-radius: 9px; font-size: 11px; font-weight: 700; background: {{ c.tagBg }}; color: {{ c.tagFg }}">{{ c.phase }}</span>
+</div>
+<div style="font-size: 12px; color: #B7C7DE">{{ c.date }} · {{ c.time }}</div>
+<div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px">
+<span style="padding: 3px 8px; border-radius: 8px; background: rgba(140,196,255,0.12); font-size: 11px">{{ c.water }}</span>
+<span style="padding: 3px 8px; border-radius: 8px; background: rgba(140,196,255,0.12); font-size: 11px">{{ c.method }}</span>
+<span style="padding: 3px 8px; border-radius: 8px; background: rgba(140,196,255,0.12); font-size: 11px">{{ c.place }}</span>
+</div>
+</div>
+</section>
+</sc-for>
+<div style="font-size: 12px; color: #B7C7DE; text-align: center">الصيدات تجريبية — جرّب تسجّل وحدة من زر الكاميرا</div>
+</div>
+</sc-if>
+
+<!-- ================= حسابي (مثل إنستقرام) ================= -->
+<sc-if value="{{ isMe }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 16px 0 120px">
+<div style="padding: 0 16px; display: flex; align-items: center; justify-content: space-between">
+<div style="font-size: 20px; font-weight: 700; direction: ltr">bu_fahad</div>
+<div style="display: flex; gap: 8px">
+<button class="sj-tap" onClick="{{ openAdd }}" aria-label="أضف صورة" style="width: 42px; height: 42px; border-radius: 14px; border: 1px solid rgba(140,196,255,0.25); background: rgba(255,255,255,0.05); color: #EEF4FF; display: grid; place-items: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
+</button>
+<button aria-label="الإعدادات" style="width: 42px; height: 42px; border-radius: 14px; border: 1px solid rgba(140,196,255,0.25); background: rgba(255,255,255,0.05); color: #EEF4FF; display: grid; place-items: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+</button>
+</div>
+</div>
+
+<div style="padding: 18px 16px 0; display: flex; align-items: center; gap: 18px">
+<div style="width: 92px; height: 92px; border-radius: 50%; padding: 3px; background: conic-gradient(#8CC4FF, #5FD3A8, #F5C453, #FF8FA3, #8CC4FF); flex-shrink: 0">
+<div style="width: 100%; height: 100%; border-radius: 50%; border: 3px solid #0B1626; box-sizing: border-box; background: linear-gradient(160deg, #F7A86B, #23406B); display: grid; place-items: center; font-size: 34px; font-weight: 700; color: #0B1626">ب</div>
+</div>
+<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); text-align: center">
+<div><div style="font-size: 20px; font-weight: 700">{{ postCount }}</div><div style="font-size: 12px; color: #B7C7DE">صورة</div></div>
+<div><div style="font-size: 20px; font-weight: 700">{{ statTotal }}</div><div style="font-size: 12px; color: #B7C7DE">صيدة</div></div>
+<div><div style="font-size: 20px; font-weight: 700">{{ statSpecies }}</div><div style="font-size: 12px; color: #B7C7DE">أنواع</div></div>
+</div>
+</div>
+
+<div style="padding: 12px 16px 0">
+<div style="font-size: 16px; font-weight: 700">بو فهد</div>
+<div style="font-size: 14px; color: #B7C7DE; margin-top: 2px">أحب الحداق بالفجر · أغلب طلعاتي الفنطاس</div>
+<div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 4px 10px; border-radius: 10px; background: rgba(140,196,255,0.12); font-size: 12px">الأحمدي</span>
+<span style="padding: 4px 10px; border-radius: 10px; background: rgba(140,196,255,0.12); font-size: 12px">8 سنين خبرة</span>
+<span style="padding: 4px 10px; border-radius: 10px; background: rgba(140,196,255,0.12); font-size: 12px">طراد 25 قدم</span>
+<span style="padding: 4px 10px; border-radius: 10px; background: rgba(95,211,168,0.14); color: #5FD3A8; font-size: 12px; font-weight: 600">أكثر سمكة: {{ statTop }}</span>
+</div>
+</div>
+
+<div style="padding: 14px 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+<button style="height: 40px; border-radius: 12px; border: 0; background: rgba(255,255,255,0.08); color: #EEF4FF; font-family: inherit; font-size: 14px; font-weight: 600">تعديل البروفايل</button>
+<button class="sj-tap" onClick="{{ openAdd }}" style="height: 40px; border-radius: 12px; border: 0; background: #8CC4FF; color: #0B1626; font-family: inherit; font-size: 14px; font-weight: 700">+ صورة مع صيدتك</button>
+</div>
+
+<div class="sj-scroll" style="padding: 16px 16px 0; display: flex; gap: 14px; overflow-x: auto">
+<sc-for list="{{ highlights }}" as="h" hint-placeholder-count="4">
+<div style="flex-shrink: 0; width: 66px; display: flex; flex-direction: column; align-items: center; gap: 4px">
+<div style="width: 62px; height: 62px; border-radius: 50%; padding: 2px; border: 1px solid rgba(140,196,255,0.35); box-sizing: border-box">
+<div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(160deg, {{ h.g1 }}, {{ h.g2 }})"></div>
+</div>
+<div style="font-size: 11px; color: #B7C7DE; white-space: nowrap">{{ h.name }}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid rgba(140,196,255,0.16)">
+<div style="height: 44px; display: grid; place-items: center; border-bottom: 2px solid #EEF4FF">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EEF4FF" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+</div>
+<div style="height: 44px; display: grid; place-items: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B7C7DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c3-5 8-6 12-3l5-3-1.5 6L20 18l-5-3c-4 3-9 2-12-3z"/></svg>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding-top: 2px">
+<sc-for list="{{ posts }}" as="p" hint-placeholder-count="6">
+<button class="sj-tap" onClick="{{ p.open }}" style="position: relative; aspect-ratio: 1; border: 0; padding: 0; overflow: hidden; background: linear-gradient(180deg, {{ p.g1 }}, {{ p.g2 }})">
+<svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display: block" aria-hidden="true"><circle cx="{{ p.sx }}" cy="{{ p.sy }}" r="11" fill="{{ p.sun }}"/><rect x="0" y="66" width="100" height="34" fill="#06101E" fill-opacity="0.45"/><g fill="#0A1424" fill-opacity="0.9"><circle cx="64" cy="40" r="9"/><path d="M48 100V72c0-10 7-17 16-17s16 7 16 17v28z"/><path d="M12 66c7-8 18-9 27-4l7-5-2 8 2 8-7-5c-9 6-20 5-27-2z"/><path d="M42 63l12 4-2 5-12-4z"/></g></svg>
+<span style="position: absolute; bottom: 6px; right: 6px; padding: 2px 7px; border-radius: 8px; background: rgba(6,16,30,0.65); color: #EEF4FF; font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 11px; font-weight: 700">{{ p.fish }}</span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+
+<!-- التنبيه -->
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; top: 16px; inset-inline: 16px; z-index: 20; border-radius: 16px; background: #5FD3A8; color: #0B1626; padding: 12px 16px; font-size: 15px; font-weight: 700; text-align: center; box-shadow: 0 10px 24px rgba(0,0,0,0.35); animation: sjup .3s ease">{{ toast }}</div>
+</sc-if>
+
+<!-- الشريط السفلي -->
+<nav aria-label="التنقل الرئيسي" style="position: absolute; inset-inline: 12px; bottom: 14px; height: 68px; border-radius: 26px; background: rgba(12,26,46,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(140,196,255,0.18); box-shadow: 0 12px 30px rgba(0,0,0,0.4); display: grid; grid-template-columns: 1fr 1fr 86px 1fr; z-index: 5">
+<button class="sj-tap" onClick="{{ goSea }}" style="border: 0; background: transparent; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: {{ seaColor }}; font-size: 12px; font-weight: 700">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M2 14c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M2 20c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>
+البحر
+</button>
+<button class="sj-tap" onClick="{{ goMine }}" style="border: 0; background: transparent; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: {{ mineColor }}; font-size: 12px; font-weight: 700">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c3-5 8-6 12-3l5-3-1.5 6L20 18l-5-3c-4 3-9 2-12-3z"/></svg>
+صيدي
+</button>
+<div style="position: relative">
+<button class="sj-tap" onClick="{{ openCam }}" aria-label="سجّل صيدة" style="position: absolute; left: 50%; top: -20px; transform: translateX(-50%); width: 64px; height: 64px; border-radius: 22px; border: 0; background: linear-gradient(140deg, #8CC4FF, #5FD3A8); color: #0B1626; display: grid; place-items: center; box-shadow: 0 10px 24px rgba(95,211,168,0.35)">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L8 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+</button>
+<span style="position: absolute; bottom: 7px; inset-inline: 0; text-align: center; font-size: 12px; font-weight: 700; color: #8CC4FF">سجّل</span>
+</div>
+<button class="sj-tap" onClick="{{ goMe }}" style="border: 0; background: transparent; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: {{ meColor }}; font-size: 12px; font-weight: 700">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+حسابي
+</button>
+</nav>
+
+<!-- ================= الكاميرا ================= -->
+<sc-if value="{{ capCamera }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 10; background: #03070D; display: flex; flex-direction: column">
+<div style="padding: 16px; display: flex; align-items: center; justify-content: space-between">
+<button class="sj-tap" onClick="{{ closeCam }}" aria-label="إغلاق" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.12); color: #EEF4FF; display: grid; place-items: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</button>
+<span style="padding: 6px 12px; border-radius: 14px; background: rgba(95,211,168,0.16); color: #5FD3A8; font-size: 13px; font-weight: 700">AI · يتعرف على السمكة</span>
+<div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.12); display: grid; place-items: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="#F5C453" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+</div>
+</div>
+<div style="flex-grow: 1; margin: 0 16px; border-radius: 28px; background: radial-gradient(90% 70% at 50% 40%, #234B78, #0B1626); position: relative; display: grid; place-items: center; overflow: hidden">
+<svg width="240" height="120" viewBox="0 0 24 12" fill="#8CC4FF" fill-opacity="0.12" stroke="#8CC4FF" stroke-opacity="0.6" stroke-width="0.4" stroke-linejoin="round" aria-hidden="true"><path d="M1 6c4-5 11-6 16-2.5L23 1l-1.8 5L23 11l-6-2.5C12 12 5 11 1 6z"/><circle cx="6" cy="5.4" r="0.6" fill="#8CC4FF"/></svg>
+<div style="position: absolute; top: 40px; left: 40px; width: 40px; height: 40px; border-top: 4px solid #EEF4FF; border-left: 4px solid #EEF4FF; border-radius: 14px 0 0 0"></div>
+<div style="position: absolute; top: 40px; right: 40px; width: 40px; height: 40px; border-top: 4px solid #EEF4FF; border-right: 4px solid #EEF4FF; border-radius: 0 14px 0 0"></div>
+<div style="position: absolute; bottom: 40px; left: 40px; width: 40px; height: 40px; border-bottom: 4px solid #EEF4FF; border-left: 4px solid #EEF4FF; border-radius: 0 0 0 14px"></div>
+<div style="position: absolute; bottom: 40px; right: 40px; width: 40px; height: 40px; border-bottom: 4px solid #EEF4FF; border-right: 4px solid #EEF4FF; border-radius: 0 0 14px 0"></div>
+<div style="position: absolute; bottom: 92px; inset-inline: 0; text-align: center; font-size: 14px; color: #EEF4FF">خل السمكة كلها داخل الإطار</div>
+</div>
+<div style="padding: 22px 32px 34px; display: flex; align-items: center; justify-content: space-between">
+<div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(160deg, #F7A86B, #23406B); border: 2px solid rgba(255,255,255,0.6)"></div>
+<button class="sj-tap" onClick="{{ shoot }}" aria-label="صوّر" style="width: 82px; height: 82px; border-radius: 50%; border: 5px solid #EEF4FF; background: linear-gradient(140deg, #8CC4FF, #5FD3A8)"></button>
+<div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.12); display: grid; place-items: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EEF4FF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 13a8 8 0 0 0 14.9 3"/><path d="M4 4v4h4M20 20v-4h-4"/></svg>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ================= التعرف ================= -->
+<sc-if value="{{ capScan }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 10; background: #03070D; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 24px">
+<div style="width: 310px; height: 310px; border-radius: 32px; background: radial-gradient(90% 70% at 50% 40%, #234B78, #0B1626); position: relative; display: grid; place-items: center; overflow: hidden; box-shadow: 0 0 0 1px rgba(95,211,168,0.4), 0 0 60px rgba(95,211,168,0.18)">
+<svg width="230" height="115" viewBox="0 0 24 12" fill="#8CC4FF" fill-opacity="0.28" stroke="#8CC4FF" stroke-width="0.4" stroke-linejoin="round" aria-hidden="true"><path d="M1 6c4-5 11-6 16-2.5L23 1l-1.8 5L23 11l-6-2.5C12 12 5 11 1 6z"/></svg>
+<div style="position: absolute; inset-inline: 0; height: 3px; background: #5FD3A8; box-shadow: 0 0 20px #5FD3A8; animation: sjscan 1.4s ease-in-out infinite"></div>
+<span style="position: absolute; top: 70px; right: 46px; width: 10px; height: 10px; border-radius: 50%; background: #5FD3A8; animation: sjpulse 1s infinite"></span>
+<span style="position: absolute; top: 150px; left: 70px; width: 8px; height: 8px; border-radius: 50%; background: #8CC4FF; animation: sjpulse 1.3s infinite"></span>
+<span style="position: absolute; bottom: 90px; right: 120px; width: 8px; height: 8px; border-radius: 50%; background: #F5C453; animation: sjpulse .9s infinite"></span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600">
+<span style="width: 20px; height: 20px; border-radius: 50%; border: 3px solid #2A4468; border-top-color: #5FD3A8; animation: sjspin 0.8s linear infinite"></span>
+قاعد أتعرف على السمكة…
+</div>
+<div style="font-size: 13px; color: #B7C7DE">أشوف الشكل واللون والزعانف</div>
+</div>
+</sc-if>
+
+<!-- ================= النتيجة ================= -->
+<sc-if value="{{ capResult }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 10; background: rgba(3,7,13,0.78); display: flex; flex-direction: column; justify-content: flex-end">
+<section class="sj-scroll" style="max-height: 94%; overflow-y: auto; border-radius: 30px 30px 0 0; background: #0F2036; border-top: 1px solid rgba(140,196,255,0.25); padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 14px; animation: sjup .35s ease">
+<div style="width: 44px; height: 5px; border-radius: 3px; background: #2A4468; align-self: center"></div>
+<div style="position: relative; border-radius: 24px; overflow: hidden; height: 150px; background: linear-gradient(180deg, {{ rv.g1 }}, {{ rv.g2 }})">
+<svg viewBox="0 0 100 50" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display: block" aria-hidden="true"><circle cx="18" cy="16" r="8" fill="{{ rv.sun }}"/><rect x="0" y="34" width="100" height="16" fill="#06101E" fill-opacity="0.4"/><path d="M28 28c8-9 20-10 30-4l8-5-2 9 2 9-8-5c-10 6-22 5-30-4z" fill="#0A1424" fill-opacity="0.85"/></svg>
+<div style="position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 10px; background: rgba(6,16,30,0.7); color: #5FD3A8; font-size: 12px; font-weight: 700">تعرّفت عليها ✓</div>
+<button class="sj-tap" onClick="{{ closeCam }}" aria-label="إلغاء" style="position: absolute; top: 10px; left: 10px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(6,16,30,0.7); color: #EEF4FF; display: grid; place-items: center">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</button>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between">
+<div style="font-size: 32px; font-weight: 700; line-height: 1.1">{{ fish }}</div>
+<div style="font-size: 13px; color: #B7C7DE">{{ confText }}</div>
+</div>
+<div style="height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); margin-top: -6px"><div style="height: 6px; border-radius: 3px; background: linear-gradient(90deg, #8CC4FF, #5FD3A8); width: {{ confW }}%"></div></div>
+
+<div>
+<div style="font-size: 13px; color: #B7C7DE; margin-bottom: 6px">مو هذي؟ اختر الصح</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{ fishOpts }}" as="o" hint-placeholder-count="5">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid {{ o.border }}; background: {{ o.bg }}; color: {{ o.fg }}; font-family: inherit; font-size: 14px; font-weight: 700">{{ o.name }}</button>
+</sc-for>
+<button class="sj-tap" onClick="{{ toggleOther }}" style="height: 40px; padding: 0 14px; border-radius: 20px; border: 1px dashed {{ otherBorder }}; background: transparent; color: {{ otherFg }}; font-family: inherit; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+نوع ثاني
+</button>
+</div>
+<sc-if value="{{ showOther }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top: 10px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(140,196,255,0.22); padding: 12px; display: flex; flex-direction: column; gap: 10px; animation: sjup .25s ease">
+<div style="position: relative">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B7C7DE" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="position: absolute; right: 14px; top: 15px"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+<input type="text" value="{{ otherText }}" onChange="{{ typeOther }}" placeholder="اكتب اسم السمكة أو اختر من تحت" aria-label="اسم السمكة" style="width: 100%; box-sizing: border-box; height: 48px; border-radius: 14px; border: 1px solid rgba(140,196,255,0.3); background: #0B1626; color: #EEF4FF; font-family: inherit; font-size: 15px; padding: 0 42px 0 14px; outline: none">
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{ otherOpts }}" as="o" hint-placeholder-count="6">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.14); background: rgba(10,22,40,0.6); color: #DCE7F5; font-family: inherit; font-size: 13px; font-weight: 600">{{ o.name }}</button>
+</sc-for>
+</div>
+<sc-if value="{{ canUseTyped }}" hint-placeholder-val="{{ false }}">
+<button class="sj-tap" onClick="{{ useTyped }}" style="height: 44px; border-radius: 14px; border: 0; background: rgba(140,196,255,0.16); color: #8CC4FF; font-family: inherit; font-size: 14px; font-weight: 700">أضف «{{ otherText }}»</button>
+</sc-if>
+</div>
+</sc-if>
+</div>
+
+<div style="border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(140,196,255,0.14); padding: 12px 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div><div style="font-size: 11px; color: #B7C7DE">التاريخ والساعة</div><div style="font-size: 15px; font-weight: 700">15 نوفمبر · 2:20 م</div></div>
+<div><div style="font-size: 11px; color: #B7C7DE">حمل أو فساد</div><div style="font-size: 15px; font-weight: 700; color: #F5C453">{{ todayPhase }}</div></div>
+<div><div style="font-size: 11px; color: #B7C7DE">وقت الماي</div><div style="font-size: 15px; font-weight: 700">{{ nowState }}</div></div>
+<div><div style="font-size: 11px; color: #B7C7DE">الضغط</div><div style="font-size: 15px; font-weight: 700">1017 hPa</div></div>
+<div style="grid-column: 1 / -1; font-size: 12px; color: #5FD3A8">✓ ينحفظون تلقائي — ما تحتاج تكتب شي</div>
+</div>
+
+<div>
+<div style="font-size: 13px; color: #B7C7DE; margin-bottom: 6px">طريقة الصيد</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{ methodOpts }}" as="o" hint-placeholder-count="4">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid {{ o.border }}; background: {{ o.bg }}; color: {{ o.fg }}; font-family: inherit; font-size: 14px; font-weight: 700">{{ o.name }}</button>
+</sc-for>
+</div>
+</div>
+
+<div>
+<div style="font-size: 13px; color: #B7C7DE; margin-bottom: 6px">المكان (من موقعك الحين)</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{ placeOpts }}" as="o" hint-placeholder-count="3">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid {{ o.border }}; background: {{ o.bg }}; color: {{ o.fg }}; font-family: inherit; font-size: 14px; font-weight: 700">{{ o.name }}</button>
+</sc-for>
+</div>
+</div>
+
+<button class="sj-tap" onClick="{{ save }}" style="height: 58px; border-radius: 18px; border: 0; background: linear-gradient(120deg, #8CC4FF, #5FD3A8); color: #0B1626; font-family: inherit; font-size: 18px; font-weight: 700">حفظ في صيدي</button>
+<div style="font-size: 11px; color: #B7C7DE; text-align: center">نموذج للعرض: التعرف هنا تمثيلي، بالتطبيق الحقيقي يكون من الصورة</div>
+</section>
+</div>
+</sc-if>
+
+<!-- ================= عرض المنشور ================= -->
+<sc-if value="{{ hasPost }}" hint-placeholder-val="{{ false }}">
+<div class="sj-scroll" style="position: absolute; inset: 0; z-index: 12; background: #0B1626; overflow-y: auto; animation: sjup .3s ease">
+<div style="height: 60px; padding: 0 12px; display: flex; align-items: center; gap: 8px">
+<button class="sj-tap" onClick="{{ closePost }}" aria-label="رجوع" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: transparent; color: #EEF4FF; display: grid; place-items: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+</button>
+<div style="font-size: 17px; font-weight: 700">صورة</div>
+</div>
+<div style="padding: 0 16px 10px; display: flex; align-items: center; gap: 10px">
+<div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(160deg, #F7A86B, #23406B); display: grid; place-items: center; font-size: 15px; font-weight: 700; color: #0B1626">ب</div>
+<div>
+<div style="font-size: 14px; font-weight: 700">بو فهد</div>
+<div style="font-size: 12px; color: #B7C7DE">{{ cur.place }}</div>
+</div>
+</div>
+<div style="width: 390px; height: 390px; background: linear-gradient(180deg, {{ cur.g1 }}, {{ cur.g2 }})">
+<svg viewBox="0 0 100 100" width="100%" height="100%" style="display: block" aria-hidden="true"><circle cx="{{ cur.sx }}" cy="{{ cur.sy }}" r="11" fill="{{ cur.sun }}"/><rect x="0" y="66" width="100" height="34" fill="#06101E" fill-opacity="0.45"/><g fill="#0A1424" fill-opacity="0.9"><circle cx="64" cy="40" r="9"/><path d="M48 100V72c0-10 7-17 16-17s16 7 16 17v28z"/><path d="M12 66c7-8 18-9 27-4l7-5-2 8 2 8-7-5c-9 6-20 5-27-2z"/><path d="M42 63l12 4-2 5-12-4z"/></g></svg>
+</div>
+<div style="padding: 10px 12px 0; display: flex; align-items: center; gap: 4px">
+<button class="sj-tap" onClick="{{ toggleLike }}" aria-label="إعجاب" style="width: 44px; height: 44px; border: 0; background: transparent; display: grid; place-items: center">
+<svg width="27" height="27" viewBox="0 0 24 24" fill="{{ heartFill }}" stroke="{{ heartStroke }}" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>
+</button>
+<div style="width: 44px; height: 44px; display: grid; place-items: center">
+<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#EEF4FF" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+</div>
+<div style="width: 44px; height: 44px; display: grid; place-items: center">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EEF4FF" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M22 3 11 13M22 3l-7 19-4-9-9-4z"/></svg>
+</div>
+</div>
+<div style="padding: 0 16px; font-size: 14px; font-weight: 700">{{ curLikes }}</div>
+<div style="padding: 6px 16px 0; font-size: 15px; line-height: 1.6"><b>بو فهد</b> {{ cur.caption }}</div>
+<div style="padding: 12px 16px 0; display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 5px 10px; border-radius: 10px; background: rgba(140,196,255,0.12); font-size: 12px; font-weight: 600">🐟 {{ cur.fish }}</span>
+<span style="padding: 5px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; background: {{ cur.tagBg }}; color: {{ cur.tagFg }}">{{ cur.phase }}</span>
+<span style="padding: 5px 10px; border-radius: 10px; background: rgba(140,196,255,0.12); font-size: 12px">{{ cur.water }}</span>
+<span style="padding: 5px 10px; border-radius: 10px; background: rgba(140,196,255,0.12); font-size: 12px">{{ cur.place }}</span>
+</div>
+<div style="padding: 10px 16px 40px; font-size: 12px; color: #B7C7DE">{{ cur.date }}</div>
+</div>
+</sc-if>
+
+<!-- ================= إضافة صورة: اختيار ================= -->
+<sc-if value="{{ addPick }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 12; background: rgba(3,7,13,0.78); display: flex; flex-direction: column; justify-content: flex-end">
+<section style="border-radius: 30px 30px 0 0; background: #0F2036; border-top: 1px solid rgba(140,196,255,0.25); padding: 10px 16px 28px; display: flex; flex-direction: column; gap: 14px; animation: sjup .35s ease">
+<div style="width: 44px; height: 5px; border-radius: 3px; background: #2A4468; align-self: center"></div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="font-size: 21px; font-weight: 700">صورة تذكارية مع صيدتك</div>
+<button class="sj-tap" onClick="{{ closeAdd }}" aria-label="إغلاق" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.08); color: #EEF4FF; display: grid; place-items: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</button>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+<button class="sj-tap" onClick="{{ pickPhoto }}" style="height: 140px; border-radius: 22px; border: 0; background: linear-gradient(150deg, #F7A86B, #23406B); color: #0B1626; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px">
+<div style="width: 52px; height: 52px; border-radius: 50%; background: #0B1626; display: grid; place-items: center">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F7A86B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+</div>
+<span style="font-size: 15px; font-weight: 700">سلفي بالكاميرا</span>
+</button>
+<button class="sj-tap" onClick="{{ pickPhoto }}" style="height: 140px; border-radius: 22px; border: 1px solid rgba(140,196,255,0.25); background: rgba(255,255,255,0.05); color: #EEF4FF; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px">
+<div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(140,196,255,0.14); display: grid; place-items: center">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8CC4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>
+</div>
+<span style="font-size: 15px; font-weight: 700">من الألبوم</span>
+</button>
+</div>
+<div style="font-size: 12px; color: #B7C7DE; text-align: center">الصورة تنحفظ بحسابك وتنربط مع الصيدة</div>
+</section>
+</div>
+</sc-if>
+
+<!-- ================= إضافة صورة: تعديل ونشر ================= -->
+<sc-if value="{{ addEdit }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 12; background: rgba(3,7,13,0.78); display: flex; flex-direction: column; justify-content: flex-end">
+<section class="sj-scroll" style="max-height: 94%; overflow-y: auto; border-radius: 30px 30px 0 0; background: #0F2036; border-top: 1px solid rgba(140,196,255,0.25); padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 14px; animation: sjup .35s ease">
+<div style="width: 44px; height: 5px; border-radius: 3px; background: #2A4468; align-self: center"></div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="font-size: 21px; font-weight: 700">انشر صورتك</div>
+<button class="sj-tap" onClick="{{ closeAdd }}" aria-label="إغلاق" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.08); color: #EEF4FF; display: grid; place-items: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</button>
+</div>
+<div style="display: flex; gap: 12px; align-items: center">
+<div style="width: 120px; height: 120px; border-radius: 20px; overflow: hidden; flex-shrink: 0; background: linear-gradient(180deg, {{ pv.g1 }}, {{ pv.g2 }})">
+<svg viewBox="0 0 100 100" width="100%" height="100%" style="display: block" aria-hidden="true"><circle cx="{{ pv.sx }}" cy="{{ pv.sy }}" r="11" fill="{{ pv.sun }}"/><rect x="0" y="66" width="100" height="34" fill="#06101E" fill-opacity="0.45"/><g fill="#0A1424" fill-opacity="0.9"><circle cx="64" cy="40" r="9"/><path d="M48 100V72c0-10 7-17 16-17s16 7 16 17v28z"/><path d="M12 66c7-8 18-9 27-4l7-5-2 8 2 8-7-5c-9 6-20 5-27-2z"/><path d="M42 63l12 4-2 5-12-4z"/></g></svg>
+</div>
+<div style="flex-grow: 1">
+<div style="font-size: 12px; color: #B7C7DE">مربوطة مع</div>
+<div style="font-size: 19px; font-weight: 700">{{ pv.fish }}</div>
+<div style="font-size: 12px; color: #B7C7DE">{{ pv.date }} · {{ pv.phase }}</div>
+</div>
+</div>
+
+<div>
+<div style="font-size: 13px; color: #B7C7DE; margin-bottom: 6px">اربطها بصيدة</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{ linkOpts }}" as="o" hint-placeholder-count="4">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 38px; padding: 0 12px; border-radius: 19px; border: 1px solid {{ o.border }}; background: {{ o.bg }}; color: {{ o.fg }}; font-family: inherit; font-size: 13px; font-weight: 700">{{ o.name }}</button>
+</sc-for>
+</div>
+</div>
+
+<div>
+<div style="font-size: 13px; color: #B7C7DE; margin-bottom: 6px">اكتب تعليق</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{ capOpts }}" as="o" hint-placeholder-count="3">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 38px; padding: 0 12px; border-radius: 19px; border: 1px solid {{ o.border }}; background: {{ o.bg }}; color: {{ o.fg }}; font-family: inherit; font-size: 13px; font-weight: 700">{{ o.name }}</button>
+</sc-for>
+</div>
+</div>
+
+<div>
+<div style="font-size: 13px; color: #B7C7DE; margin-bottom: 6px">مين يشوفها؟</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 16px; background: rgba(0,0,0,0.25)">
+<sc-for list="{{ visOpts }}" as="o" hint-placeholder-count="3">
+<button class="sj-tap" onClick="{{ o.pick }}" style="height: 40px; border-radius: 12px; border: 0; background: {{ o.segBg }}; color: {{ o.fg }}; font-family: inherit; font-size: 13px; font-weight: 700">{{ o.name }}</button>
+</sc-for>
+</div>
+</div>
+
+<button class="sj-tap" onClick="{{ publish }}" style="height: 58px; border-radius: 18px; border: 0; background: linear-gradient(120deg, #8CC4FF, #5FD3A8); color: #0B1626; font-family: inherit; font-size: 18px; font-weight: 700">انشر</button>
+</section>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844},"start":{"editor":"enum","options":["sea","camera","scan","result","mine","insight","me","post","addpick","addpost"],"default":"sea"},"h":{"editor":null,"default":844}}'>
+var ACC = '#8CC4FF', BG = '#0B1626', LINE = 'rgba(140,196,255,0.18)', SUB = '#B7C7DE', TEAL = '#5FD3A8', AMB = '#F5C453';
+var T = 12.42, NOW = 14 + 20 / 60;
+var DIRS = { 'شمالي': 0, 'شمالي شرقي': 45, 'شرقي': 90, 'جنوبي شرقي': 135, 'جنوبي': 180, 'جنوبي غربي': 225, 'غربي': 270, 'شمالي غربي': 315 };
+var DAYS = [
+  { dayName: 'اليوم', full: 'الأحد 15 نوفمبر', dateNum: '15', age: 6, phase: 'فساد', wind: 14, windDir: 'شمالي غربي', pressure: 1017, pTrend: 'ثابت' },
+  { dayName: 'الإثنين', full: 'الإثنين 16 نوفمبر', dateNum: '16', age: 7, phase: 'فساد', wind: 18, windDir: 'شمالي غربي', pressure: 1015, pTrend: 'نازل' },
+  { dayName: 'الثلاثاء', full: 'الثلاثاء 17 نوفمبر', dateNum: '17', age: 8, phase: 'فساد', wind: 22, windDir: 'شمالي', pressure: 1013, pTrend: 'نازل' },
+  { dayName: 'الأربعاء', full: 'الأربعاء 18 نوفمبر', dateNum: '18', age: 9, phase: 'فساد', wind: 11, windDir: 'شرقي', pressure: 1016, pTrend: 'طالع' },
+  { dayName: 'الخميس', full: 'الخميس 19 نوفمبر', dateNum: '19', age: 10, phase: 'فساد', wind: 9, windDir: 'جنوبي شرقي', pressure: 1019, pTrend: 'طالع' },
+  { dayName: 'الجمعة', full: 'الجمعة 20 نوفمبر', dateNum: '20', age: 11, phase: 'فساد', wind: 16, windDir: 'شمالي غربي', pressure: 1018, pTrend: 'ثابت' },
+  { dayName: 'السبت', full: 'السبت 21 نوفمبر', dateNum: '21', age: 12, phase: 'حمل', wind: 20, windDir: 'شمالي غربي', pressure: 1014, pTrend: 'نازل' }
+];
+var LOOK = {
+  'هامور': { g1: '#F7A86B', g2: '#23406B', sun: '#FFE2B0', sx: 28, sy: 40 },
+  'سبيطي': { g1: '#9CD3FF', g2: '#16416B', sun: '#FFFFFF', sx: 24, sy: 28 },
+  'شعم': { g1: '#FFB38A', g2: '#4E3768', sun: '#FFD6A8', sx: 30, sy: 46 },
+  'نقرور': { g1: '#A6EAD7', g2: '#1B5468', sun: '#FFF6D6', sx: 26, sy: 32 },
+  'زبيدي': { g1: '#F5C453', g2: '#6E3F2A', sun: '#FFF1C2', sx: 30, sy: 40 }
+};
+var NIGHT = { g1: '#2A4170', g2: '#050B16', sun: '#DDE7F7', sx: 26, sy: 24 };
+function look(f) { return LOOK[f] || LOOK['هامور']; }
+var SAMPLE = [
+  { fish: 'هامور', date: 'الخميس 12 نوفمبر', dshort: '12 نوفمبر', time: '5:40 ص', band: 'الفجر', phase: 'حمل', water: 'ثبر', method: 'جيقنق', place: 'الفنطاس' },
+  { fish: 'سبيطي', date: 'الخميس 12 نوفمبر', dshort: '12 نوفمبر', time: '6:15 ص', band: 'الفجر', phase: 'حمل', water: 'وقفة', method: 'حداق', place: 'الفنطاس' },
+  { fish: 'هامور', date: 'الإثنين 9 نوفمبر', dshort: '9 نوفمبر', time: '4:50 م', band: 'العصر', phase: 'حمل', water: 'ثبر', method: 'حداق', place: 'جون الكويت' },
+  { fish: 'شعم', date: 'الخميس 5 نوفمبر', dshort: '5 نوفمبر', time: '7:10 ص', band: 'الصبح', phase: 'فساد', water: 'سجي', method: 'حداق', place: 'الخيران' },
+  { fish: 'هامور', date: 'الأحد 1 نوفمبر', dshort: '1 نوفمبر', time: '5:30 ص', band: 'الفجر', phase: 'فساد', water: 'سجي', method: 'جيقنق', place: 'الفنطاس' }
+];
+var POSTS = [
+  Object.assign({}, LOOK['هامور'], { fish: 'هامور', caption: 'أول هامور هالموسم والحمد لله', date: 'الخميس 12 نوفمبر', phase: 'حمل', water: 'ثبر', place: 'الفنطاس', likes: 24 }),
+  Object.assign({}, LOOK['سبيطي'], { fish: 'سبيطي', caption: 'صيدة الفجر مع الشباب', date: 'الخميس 12 نوفمبر', phase: 'حمل', water: 'وقفة', place: 'الفنطاس', likes: 17 }),
+  Object.assign({}, NIGHT, { fish: 'هامور', caption: 'طلعة ليل وما خابت', date: 'الإثنين 9 نوفمبر', phase: 'حمل', water: 'ثبر', place: 'جون الكويت', likes: 31 }),
+  Object.assign({}, LOOK['شعم'], { fish: 'شعم', caption: 'شعم الخيران', date: 'الخميس 5 نوفمبر', phase: 'فساد', water: 'سجي', place: 'الخيران', likes: 12 }),
+  Object.assign({}, LOOK['نقرور'], { fish: 'نقرور', caption: 'نقرور على الحداق', date: 'السبت 31 أكتوبر', phase: 'حمل', water: 'سجي', place: 'الفنطاس', likes: 9 }),
+  Object.assign({}, LOOK['زبيدي'], { fish: 'زبيدي', caption: 'زبيدي الموسم وصل', date: 'الجمعة 23 أكتوبر', phase: 'حمل', water: 'ثبر', place: 'جون الكويت', likes: 42 })
+];
+var COMMON = ['هامور', 'شعم', 'مزيزي', 'سبيطي', 'ينم'];
+var MORE = ['نقرور', 'شعري', 'صافي', 'بياح', 'ميد', 'قرقفان', 'حمام', 'خباط'];
+var CAPS = ['الحمد لله على الرزق', 'صيدة اليوم', 'أكبر وحدة لي'];
+var VIS = ['الكل', 'أصحابي', 'أنا بس'];
+
+function fmt(h) {
+  h = ((h % 24) + 24) % 24;
+  var hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+  if (mm === 60) { hh = (hh + 1) % 24; mm = 0; }
+  return (hh % 12 || 12) + ':' + (mm < 10 ? '0' : '') + mm + ' ' + (hh < 12 ? 'ص' : 'م');
+}
+function dur(h) {
+  var m = Math.round(h * 60), H = Math.floor(m / 60), M = m % 60;
+  return 'بعد ' + (H ? H + ' س ' : '') + M + ' د';
+}
+function tag(phase) {
+  return phase === 'حمل' ? { tagBg: 'rgba(95,211,168,0.16)', tagFg: TEAL } : { tagBg: 'rgba(245,196,83,0.16)', tagFg: AMB };
+}
+function chip(on) { return on ? { bg: ACC, fg: BG, border: ACC, segBg: ACC } : { bg: 'rgba(10,22,40,0.55)', fg: '#DCE7F5', border: 'rgba(255,255,255,0.16)', segBg: 'transparent' }; }
+function top(list, key) {
+  var c = {}, best = '', n = 0;
+  list.forEach(function (x) { c[x[key]] = (c[x[key]] || 0) + 1; if (c[x[key]] > n) { n = c[x[key]]; best = x[key]; } });
+  return best;
+}
+function moonPath(age) {
+  var ph = 2 * Math.PI * age / 29.53, rx = Math.abs(7 * Math.cos(ph)).toFixed(2);
+  var waxing = age < 14.77, gib = Math.cos(ph) < 0;
+  if (waxing) return 'M10 3A7 7 0 0 1 10 17A' + rx + ' 7 0 0 ' + (gib ? 1 : 0) + ' 10 3Z';
+  return 'M10 3A7 7 0 0 0 10 17A' + rx + ' 7 0 0 ' + (gib ? 0 : 1) + ' 10 3Z';
+}
+function wave(amp, len, y0) {
+  var d = 'M0 ' + y0;
+  for (var x = 0; x < 780; x += len) d += ' q' + len / 4 + ' ' + (-amp) + ' ' + len / 2 + ' 0 t' + len / 2 + ' 0';
+  return d + ' V60 H0 Z';
+}
+function waterAt(td, t) {
+  if (td.ex.some(function (e) { return Math.abs(e.t - t) < 0.5; })) return 'وقفة';
+  return td.h(t + 0.1) > td.h(t) ? 'سجي' : 'ثبر';
+}
+function tide(i) {
+  var d = DAYS[i], amp = d.phase === 'حمل' ? 1.4 : 0.6, mid = 2.0, tH = 3 + 10 / 60 + i * 50 / 60;
+  var h = function (t) { return mid + amp * Math.cos(2 * Math.PI * (t - tH) / T); };
+  var y = function (v) { return 120 - (v / 3.6) * 100; };
+  var pts = [];
+  for (var k = 0; k <= 48; k++) { var t = k / 2; pts.push((t / 24 * 326).toFixed(1) + ' ' + y(h(t)).toFixed(1)); }
+  var path = 'M' + pts.join(' L'), ex = [];
+  for (var n = -2; n < 4; n++) {
+    var th = tH + n * T, tl = th + T / 2;
+    if (th >= 0 && th < 24) ex.push({ t: th, high: true });
+    if (tl >= 0 && tl < 24) ex.push({ t: tl, high: false });
+  }
+  ex.sort(function (a, b) { return a.t - b.t; });
+  return { h: h, y: y, path: path, area: path + ' L326 140 L0 140 Z', ex: ex, amp: amp, mid: mid };
+}
+var WAVE1 = wave(9, 130, 30), WAVE2 = wave(6, 97.5, 38);
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    var st = (p && p.start) || 'sea';
+    var s = { tab: 'sea', day: 0, cap: null, fish: 'هامور', method: 'حداق', place: 'الفنطاس', filter: 'الكل', catches: SAMPLE.slice(), posts: POSTS.slice(), liked: {}, post: null, add: null, link: 0, capIdx: 0, vis: 'أصحابي', toast: '' };
+    if (st === 'camera' || st === 'scan' || st === 'result') s.cap = st;
+    if (st === 'mine') s.tab = 'mine';
+    if (st === 'insight') { s.tab = 'mine'; s.filter = 'هامور'; }
+    if (st === 'me') s.tab = 'me';
+    if (st === 'post') { s.tab = 'me'; s.post = 0; }
+    if (st === 'addpick') { s.tab = 'me'; s.add = 'pick'; }
+    if (st === 'addpost') { s.tab = 'me'; s.add = 'edit'; }
+    this.state = s;
+  }
+  componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); }
+  flash(msg) {
+    var self = this;
+    clearTimeout(this.t2);
+    this.t2 = setTimeout(function () { self.setState({ toast: '' }); }, 2500);
+    return msg;
+  }
+
+  renderVals() {
+    var s = this.state, self = this;
+    var td = tide(s.day), today = tide(0), D = DAYS[s.day], isToday = s.day === 0;
+    var nowState = waterAt(today, NOW);
+    var next = isToday ? td.ex.filter(function (e) { return e.t > NOW; })[0] : td.ex[0];
+    var dTag = tag(D.phase);
+
+    var days = DAYS.map(function (d, i) {
+      var on = i === s.day, c = chip(on), tg = tag(d.phase);
+      return Object.assign({}, d, c, {
+        tagFg: on ? BG : tg.tagFg, moon: moonPath(d.age),
+        moonLit: on ? BG : '#EEF4FF', moonDim: on ? 'rgba(11,22,38,0.18)' : 'rgba(255,255,255,0.12)',
+        pick: function () { self.setState({ day: i }); }
+      });
+    });
+    var extremes = td.ex.map(function (e) {
+      return { label: e.high ? '▲ مد' : '▼ جزر', color: e.high ? ACC : '#FF8FA3', time: fmt(e.t), height: (td.mid + (e.high ? 1 : -1) * td.amp).toFixed(1) };
+    });
+
+    var filt = s.filter;
+    var shown = s.catches.filter(function (c) { return filt === 'الكل' || c.fish === filt; }).map(function (c) { return Object.assign({}, c, look(c.fish), tag(c.phase)); });
+    var names = ['الكل'];
+    s.catches.forEach(function (c) { if (names.indexOf(c.fish) < 0) names.push(c.fish); });
+    var fList = ['الكل'].concat(COMMON);
+    names.slice(1).forEach(function (n) { if (fList.indexOf(n) < 0) fList.push(n); });
+    if (fList.indexOf(filt) < 0) fList.push(filt);
+    var filters = fList.map(function (n) { return Object.assign({ name: n, pick: function () { self.setState({ filter: n, fOther: false }); } }, chip(n === filt)); });
+    var fq = (s.fText || '').trim();
+    var nH = shown.filter(function (c) { return c.phase === 'حمل'; }).length;
+    var hPct = shown.length ? Math.round(nH / shown.length * 100) : 0;
+
+    var opts = function (list, key) {
+      return list.map(function (n) { var o = {}; o[key] = n; return Object.assign({ name: n, pick: function () { self.setState(o); } }, chip(s[key] === n)); });
+    };
+    var go = function (tab) { return function () { self.setState({ tab: tab, post: null, add: null }); }; };
+
+    var posts = s.posts.map(function (p, i) { return Object.assign({}, p, { open: function () { self.setState({ post: i }); } }); });
+    var cur = s.post !== null && s.posts[s.post] ? Object.assign({}, s.posts[s.post], tag(s.posts[s.post].phase)) : Object.assign({}, POSTS[0], tag('حمل'));
+    var liked = s.post !== null && !!s.liked[s.post];
+    var lc = s.catches[s.link] || s.catches[0];
+    var pv = Object.assign({}, lc, look(lc.fish));
+    var linkOpts = s.catches.slice(0, 4).map(function (c, i) { return Object.assign({ name: c.fish + ' · ' + c.dshort, pick: function () { self.setState({ link: i }); } }, chip(s.link === i)); });
+    var capOpts = CAPS.map(function (c, i) { return Object.assign({ name: c, pick: function () { self.setState({ capIdx: i }); } }, chip(s.capIdx === i)); });
+
+    return {
+      rootH: (this.props && this.props.h) || 844,
+      isSea: s.tab === 'sea', isMine: s.tab === 'mine', isMe: s.tab === 'me',
+      seaColor: s.tab === 'sea' ? ACC : SUB, mineColor: s.tab === 'mine' ? ACC : SUB, meColor: s.tab === 'me' ? ACC : SUB,
+      goSea: go('sea'), goMine: go('mine'), goMe: go('me'),
+
+      heroKicker: isToday ? 'الحين في الفنطاس' : D.full,
+      heroTitle: isToday ? nowState : 'مد ' + (D.phase === 'حمل' ? 'قوي' : 'هادي'),
+      dayPhase: D.phase, dayTagBg: dTag.tagBg, dayTagFg: dTag.tagFg, dayFull: D.full, dayMoon: moonPath(D.age),
+      currentText: D.phase === 'حمل' ? 'تيار قوي' : 'تيار خفيف',
+      wave1: WAVE1, wave2: WAVE2,
+      days: days, tidePath: td.path, areaPath: td.area,
+      nowOpacity: isToday ? 1 : 0, nowX: (NOW / 24 * 326).toFixed(1), nowY: td.y(td.h(NOW)).toFixed(1),
+      nowState: nowState, todayPhase: DAYS[0].phase, extremes: extremes,
+      wind: D.wind, windDir: D.windDir, windRot: ((DIRS[D.windDir] || 0) + 180) % 360,
+      pressure: D.pressure, pTrend: D.pTrend, pDash: (Math.max(0, Math.min(1, (D.pressure - 1000) / 30)) * 44).toFixed(1),
+      waqfaLabel: isToday ? 'الوقفة الجاية' : 'أول وقفة',
+      waqfaTime: next ? fmt(next.t) : '—',
+      waqfaSub: next ? (isToday ? dur(next.t - NOW) : (next.high ? 'أعلى مد' : 'أدنى جزر')) : '',
+
+      filters: filters, filter: filt, shown: shown,
+      hasInsight: filt !== 'الكل' && shown.length > 0, noInsight: filt === 'الكل',
+      noCatchFor: filt !== 'الكل' && shown.length === 0,
+      showFOther: !!s.fOther,
+      fOtherBorder: s.fOther ? ACC : 'rgba(255,255,255,0.3)', fOtherFg: s.fOther ? ACC : '#DCE7F5',
+      toggleFOther: function () { self.setState({ fOther: !s.fOther, fText: '' }); },
+      fText: s.fText || '',
+      typeF: function (e) { self.setState({ fText: e && e.target ? e.target.value : '' }); },
+      fOtherOpts: MORE.filter(function (n) { return !fq || n.indexOf(fq) >= 0; }).map(function (n) {
+        return { name: n, pick: function () { self.setState({ filter: n, fOther: false, fText: '' }); } };
+      }),
+      canUseF: !!fq && MORE.concat(COMMON).indexOf(fq) < 0,
+      useF: function () { if (fq) self.setState({ filter: fq, fOther: false, fText: '' }); },
+      insHaml: hPct, insFasad: shown.length ? 100 - hPct : 0,
+      insWater: top(shown, 'water'), insBand: top(shown, 'band'), insCount: shown.length,
+      statTotal: s.catches.length, statSpecies: names.length - 1, statTop: top(s.catches, 'fish'), statMethod: top(s.catches, 'method'),
+
+      postCount: s.posts.length, posts: posts,
+      highlights: [
+        Object.assign({ name: 'هوامير' }, LOOK['هامور']), Object.assign({ name: 'الفنطاس' }, LOOK['سبيطي']),
+        Object.assign({ name: 'طلعات ليل' }, NIGHT), Object.assign({ name: 'الشباب' }, LOOK['زبيدي'])
+      ],
+      hasPost: s.post !== null, cur: cur,
+      curLikes: (cur.likes + (liked ? 1 : 0)) + ' إعجاب',
+      heartFill: liked ? '#FF8FA3' : 'none', heartStroke: liked ? '#FF8FA3' : '#EEF4FF',
+      toggleLike: function () { var l = Object.assign({}, s.liked); l[s.post] = !l[s.post]; self.setState({ liked: l }); },
+      closePost: function () { self.setState({ post: null }); },
+
+      addPick: s.add === 'pick', addEdit: s.add === 'edit',
+      openAdd: function () { self.setState({ add: 'pick', tab: 'me' }); },
+      closeAdd: function () { self.setState({ add: null }); },
+      pickPhoto: function () { self.setState({ add: 'edit' }); },
+      pv: pv, linkOpts: linkOpts, capOpts: capOpts, visOpts: opts(VIS, 'vis'),
+      publish: function () {
+        var p = Object.assign({}, look(lc.fish), { fish: lc.fish, caption: CAPS[s.capIdx], date: lc.date, phase: lc.phase, water: lc.water, place: lc.place, likes: 0 });
+        self.setState({ add: null, tab: 'me', posts: [p].concat(s.posts), toast: self.flash('انتشرت صورتك ✓') });
+      },
+
+      capCamera: s.cap === 'camera', capScan: s.cap === 'scan', capResult: s.cap === 'result',
+      openCam: function () { self.setState({ cap: 'camera', post: null, add: null }); },
+      closeCam: function () { clearTimeout(self.t1); self.setState({ cap: null }); },
+      shoot: function () {
+        self.setState({ cap: 'scan' });
+        self.t1 = setTimeout(function () { self.setState({ cap: 'result', fish: 'هامور', method: 'حداق', place: 'الفنطاس' }); }, 1700);
+      },
+      fish: s.fish, rv: look(s.fish),
+      confText: s.fish === 'هامور' ? 'متأكد 92٪' : 'اخترتها أنت',
+      confW: s.fish === 'هامور' ? 92 : 100,
+      fishOpts: opts(COMMON.indexOf(s.fish) < 0 ? COMMON.concat([s.fish]) : COMMON, 'fish'),
+      showOther: !!s.other,
+      otherBorder: s.other ? ACC : 'rgba(255,255,255,0.3)', otherFg: s.other ? ACC : '#DCE7F5',
+      toggleOther: function () { self.setState({ other: !s.other, otherText: '' }); },
+      otherText: s.otherText || '',
+      typeOther: function (e) { self.setState({ otherText: e && e.target ? e.target.value : '' }); },
+      otherOpts: MORE.filter(function (n) { var q = (s.otherText || '').trim(); return !q || n.indexOf(q) >= 0; }).map(function (n) {
+        return { name: n, pick: function () { self.setState({ fish: n, other: false, otherText: '' }); } };
+      }),
+      canUseTyped: !!(s.otherText || '').trim() && MORE.concat(COMMON).indexOf((s.otherText || '').trim()) < 0,
+      useTyped: function () { var n = (s.otherText || '').trim(); if (n) self.setState({ fish: n, other: false, otherText: '' }); },
+      methodOpts: opts(['حداق', 'جيقنق', 'شباك', 'ترول'], 'method'),
+      placeOpts: opts(['الفنطاس', 'جون الكويت', 'الخيران'], 'place'),
+      save: function () {
+        var c = { fish: s.fish, date: 'الأحد 15 نوفمبر', dshort: '15 نوفمبر', time: '2:20 م', band: 'العصر', phase: DAYS[0].phase, water: nowState, method: s.method, place: s.place };
+        self.setState({ cap: null, tab: 'mine', filter: 'الكل', catches: [c].concat(s.catches), link: 0, toast: self.flash('انحفظت الصيدة في صيدي ✓') });
+      },
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

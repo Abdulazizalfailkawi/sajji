@@ -6,7 +6,7 @@
 // `QuickCatchSheet` is also used from a trip page to add a fish to that trip.
 
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Loader2, LocateFixed, X } from "lucide-react";
 import { useStore } from "@/lib/db/store";
 import { newCatch } from "@/lib/factory";
@@ -235,22 +235,15 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
   );
 }
 
+/** The quick-catch sheet, opened by the camera button in the bottom bar or on the sea screen ("sj:quick-catch"). */
 export function QuickCatch() {
-  const { t } = useI18n();
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const on = () => setOpen(true);
+    window.addEventListener("sj:quick-catch", on);
+    return () => window.removeEventListener("sj:quick-catch", on);
+  }, []);
   if (HIDDEN.some((p) => path.startsWith(p))) return null;
-  return (
-    <>
-      <button
-        type="button"
-        aria-label={t("تسجيل سريع لصيدة", "Quick catch")}
-        onClick={() => setOpen(true)}
-        className="no-print fixed end-4 bottom-[calc(var(--safe-bottom)+5rem)] z-40 grid size-14 place-items-center rounded-full border border-white/20 bg-black text-white shadow-xl shadow-black/60 active:scale-95"
-      >
-        <Camera className="size-8 text-white" strokeWidth={2.4} />
-      </button>
-      <QuickCatchSheet open={open} onClose={() => setOpen(false)} />
-    </>
-  );
+  return <QuickCatchSheet open={open} onClose={() => setOpen(false)} />;
 }

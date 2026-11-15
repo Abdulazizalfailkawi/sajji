@@ -47,3 +47,21 @@ describe("الحمل والفساد", () => {
     expect(overlaps({ hamal: [[10, 15]], fasad: [[15, 20]] })).toBe(true);
   });
 });
+
+describe("cycleShortLabel — direction of a transitional day", () => {
+  const cfg = { hamal: [[1, 4]] as [number, number][], fasad: [[9, 12]] as [number, number][] };
+  it("labels haml, fasad and both transitions", async () => {
+    const { cycleShortLabel } = await import("../tidecycle");
+    // find date keys by Hijri day in Nov–Dec 2026
+    const keys: Record<number, string> = {};
+    for (let d = 1; d <= 60; d++) {
+      const k = new Date(Date.UTC(2026, 10, d)).toISOString().slice(0, 10);
+      const h = hijriForDateKey(k, 0).day;
+      if (!keys[h]) keys[h] = k;
+    }
+    expect(cycleShortLabel(keys[2], 0, cfg).ar).toBe("حمل");
+    expect(cycleShortLabel(keys[6], 0, cfg).ar).toBe("بين الحمل والفساد");
+    expect(cycleShortLabel(keys[10], 0, cfg).ar).toBe("فساد");
+    expect(cycleShortLabel(keys[20], 0, cfg).ar).toBe("بين الفساد والحمل");
+  });
+});

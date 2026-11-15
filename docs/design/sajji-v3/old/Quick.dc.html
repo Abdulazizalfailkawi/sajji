@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>سجي — سجّل صيدة</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#8CC4FF}a:hover{color:#B7DBFF}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; direction: rtl; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; color: #EEF4FF; background: #060D18">
+
+<div style="padding: 24px 16px; opacity: 0.35">
+<div style="font-size: 26px; font-weight: 700; text-align: center">سجي</div>
+<div style="margin-top: 20px; border-radius: 20px; background: #12223A; height: 96px"></div>
+</div>
+
+<section aria-label="سجّل صيدة" style="position: absolute; inset-inline: 0; bottom: 0; border-radius: 28px 28px 0 0; background: #12223A; border-top: 1px solid #2A4468; padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="width: 44px; height: 5px; border-radius: 3px; background: #2A4468; align-self: center"></div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 22px; font-weight: 700">سجّل صيدة</h1>
+<a href="Main.dc.html" aria-label="إغلاق" style="width: 44px; height: 44px; border-radius: 50%; background: #182D4A; color: #EEF4FF; display: grid; place-items: center; text-decoration: none">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button style="height: 96px; border-radius: 18px; border: 1px solid #2A4468; background: #182D4A; color: #EEF4FF; font-family: inherit; font-size: 15px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8CC4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L8 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+صوّر السمكة
+</button>
+<button style="height: 96px; border-radius: 18px; border: 1px solid #2A4468; background: #182D4A; color: #EEF4FF; font-family: inherit; font-size: 15px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8CC4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>
+من الألبوم
+</button>
+</div>
+
+<div>
+<label for="fish" style="display: block; font-size: 14px; font-weight: 600; color: #B7C7DE; margin-bottom: 6px">نوع السمكة</label>
+<select id="fish" style="width: 100%; height: 52px; border-radius: 14px; border: 1px solid #2A4468; background: #182D4A; color: #EEF4FF; font-family: inherit; font-size: 16px; padding: 0 14px">
+<option>اختر من القائمة…</option>
+<option>هامور</option>
+<option>سبيطي</option>
+<option>شعم</option>
+<option>نوع ثاني (اكتب الاسم)</option>
+</select>
+</div>
+
+<div>
+<div style="font-size: 14px; font-weight: 600; color: #B7C7DE; margin-bottom: 6px">المكان</div>
+<div style="display: flex; gap: 8px">
+<button style="height: 52px; padding: 0 14px; border-radius: 14px; border: 1px solid #2A4468; background: #182D4A; color: #EEF4FF; font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; white-space: nowrap">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8CC4FF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+موقعي الحين
+</button>
+<select aria-label="اختر المكان" style="flex-grow: 1; min-width: 0; height: 52px; border-radius: 14px; border: 1px solid #2A4468; background: #182D4A; color: #EEF4FF; font-family: inherit; font-size: 16px; padding: 0 14px">
+<option>الفنطاس</option>
+<option>جون الكويت</option>
+<option>أبراج الكويت</option>
+<option>الخيران</option>
+</select>
+</div>
+</div>
+
+<div>
+<div style="font-size: 14px; font-weight: 600; color: #B7C7DE; margin-bottom: 6px">أضفها إلى</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; background: #0B1626; border-radius: 16px; padding: 4px">
+<button style="min-height: 48px; border-radius: 12px; border: 0; background: #8CC4FF; color: #0B1626; font-family: inherit; font-size: 13px; font-weight: 700">الرحلة الجارية</button>
+<button style="min-height: 48px; border-radius: 12px; border: 0; background: transparent; color: #B7C7DE; font-family: inherit; font-size: 13px; font-weight: 600">رحلة سابقة</button>
+<button style="min-height: 48px; border-radius: 12px; border: 0; background: transparent; color: #B7C7DE; font-family: inherit; font-size: 13px; font-weight: 600">بدون رحلة</button>
+</div>
+<div style="margin-top: 6px; font-size: 12px; color: #B7C7DE">الفنطاس · بدأت 2:30 م</div>
+</div>
+
+<button style="height: 56px; border-radius: 16px; border: 0; background: #8CC4FF; color: #0B1626; font-family: inherit; font-size: 18px; font-weight: 700">حفظ الصيدة</button>
+<div style="font-size: 12px; color: #B7C7DE; text-align: center">الوزن والعمق تقدر تضيفهم بعدين من صفحة الصيدة</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

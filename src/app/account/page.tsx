@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { BadgeCheck, Camera, CircleUserRound, Cloud, LogIn, LogOut, Settings, Smartphone, Trash2 } from "lucide-react";
+import { BadgeCheck, BarChart3, Camera, CircleUserRound, Cloud, LogIn, LogOut, Map as MapIcon, Settings, Smartphone, Trash2, Users } from "lucide-react";
 import { Photo } from "@/components/common";
 import { useToast } from "@/components/Toast";
 import { Badge, Button, Card, Field, Input, LinkButton, Notice, PageHeader, Textarea } from "@/components/ui";
@@ -13,6 +13,25 @@ import { useIsAdmin } from "@/lib/admin";
 import { useStore } from "@/lib/db/store";
 import { useI18n } from "@/lib/i18n";
 import { useProfile } from "@/lib/profile";
+
+/** Pages that used to sit in the bottom bar (design v3 keeps only البحر · صيدي · حسابي). */
+function AccountLinks({ community = false }: { community?: boolean }) {
+  const { t } = useI18n();
+  const items = [
+    ...(community ? [{ href: "/community", Icon: Users, l: t("المجتمع", "Community"), tone: "text-mint" }] : []),
+    { href: "/stats", Icon: BarChart3, l: t("إحصائياتي والتحليلات", "Stats & analytics"), tone: "text-ocean" },
+    { href: "/map", Icon: MapIcon, l: t("الخريطة", "Map"), tone: "text-ocean" },
+  ];
+  return (
+    <div className="mt-3 grid grid-cols-1 gap-2">
+      {items.map(({ href, Icon, l, tone }) => (
+        <Link key={href} href={href} className="flex items-center gap-3 rounded-2xl border border-line bg-surface/80 px-4 py-3 text-sm font-semibold backdrop-blur-md">
+          <Icon className={`size-5 ${tone}`} /> {l}
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 export default function AccountPage() {
   const store = useStore();
@@ -56,6 +75,7 @@ export default function AccountPage() {
           </LinkButton>
           <p className="text-xs text-muted">{t("بدون رسالة تأكيد — تسجّل وتدخل مباشرة.", "No confirmation email — sign up and you're in.")}</p>
         </Card>
+        <AccountLinks />
       </>
     );
   }
@@ -154,6 +174,8 @@ export default function AccountPage() {
         <Stat n={ds.catches.length} label={t("صيدات", "Catches")} />
         <Stat n={species} label={t("أنواع", "Species")} />
       </div>
+
+      <AccountLinks community />
 
       <div className="mt-3 space-y-2">
         <Link href="/settings" className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm font-medium">

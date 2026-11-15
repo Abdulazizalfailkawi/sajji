@@ -61,6 +61,9 @@ export function AiPanel({
           UNAUTHENTICATED: t("سجّل الدخول لاستخدام التعرّف بالذكاء الاصطناعي.", "Sign in to use AI identification."),
           AUTH_NOT_CONFIGURED: t("التعرّف بالذكاء الاصطناعي يتطلب حساباً.", "AI identification requires an account."),
           AI_RATE_LIMITED: t("طلبات كثيرة — حاول بعد دقيقة.", "Too many requests — try again in a minute."),
+          AI_NO_CREDIT: t("رصيد الذكاء الاصطناعي خلص.", "AI credit has run out."),
+          AI_BAD_OUTPUT: t("ما قدر يقرأ الصورة زين — جرّب صورة ثانية أو اختر النوع يدوياً.", "Couldn't read the photo — try another or choose the species manually."),
+          AI_UNREACHABLE: t("الذكاء الاصطناعي ما استجاب — حاول مرة ثانية.", "The AI didn't respond — try again."),
           NO_PHOTO: t("الصورة غير متوفرة على هذا الجهاز.", "The photo isn't available on this device."),
         }[code] ?? t(`تعذر التعرّف (${code}). اختر النوع يدوياً.`, `Identification failed (${code}). Choose the species manually.`),
       );

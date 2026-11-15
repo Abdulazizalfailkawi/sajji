@@ -112,6 +112,24 @@ export function saveCycleConfig(c: CycleConfig | null) {
   } catch {}
 }
 
+/**
+ * Short label for a day, with the direction of a transitional day:
+ * after haml → "بين الحمل والفساد", after fasad → "بين الفساد والحمل".
+ */
+export function cycleShortLabel(key: string, offset = 0, cfg: CycleConfig = DEFAULT_CYCLE): { cycle: Cycle; ar: string; en: string } {
+  const cycle = cycleOnDate(key, offset, cfg);
+  if (cycle === "hamal") return { cycle, ar: "حمل", en: "Haml" };
+  if (cycle === "fasad") return { cycle, ar: "فساد", en: "Fasad" };
+  let k = key;
+  for (let i = 0; i < 30; i++) {
+    k = addDays(k, -1);
+    const prev = cycleOnDate(k, offset, cfg);
+    if (prev === "hamal") return { cycle, ar: "بين الحمل والفساد", en: "Haml → Fasad" };
+    if (prev === "fasad") return { cycle, ar: "بين الفساد والحمل", en: "Fasad → Haml" };
+  }
+  return { cycle, ar: "بين الحمل والفساد", en: "Transition" };
+}
+
 export const CYCLE_LABEL: Record<Cycle, { ar: string; en: string }> = {
   hamal: { ar: "حمل", en: "Haml (spring tides)" },
   fasad: { ar: "فساد", en: "Fasad (neap tides)" },
