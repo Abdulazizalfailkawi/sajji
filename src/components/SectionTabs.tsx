@@ -12,12 +12,13 @@ export function SectionTabs({ section }: { section: "trips" | "stats" }) {
   const tabs =
     section === "trips"
       ? [
+          { href: "/catches", l: t("صيدي", "Catches") },
           { href: "/trips", l: t("الرحلات", "Trips") },
-          { href: "/catches", l: t("سجل الصيد", "Catches") },
           { href: "/calendar", l: t("التقويم", "Calendar") },
           { href: "/spots", l: t("المواقع", "Spots") },
           { href: "/equipment", l: t("المعدات", "Gear") },
           { href: "/gallery", l: t("الصور", "Photos") },
+          { href: "/marks", l: t("إحداثياتي", "Marks") },
         ]
       : [
           { href: "/stats", l: t("ملفي", "Profile") },

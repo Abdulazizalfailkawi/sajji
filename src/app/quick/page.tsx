@@ -6,6 +6,6 @@ import { useEffect } from "react";
 /** Kept for old links/bookmarks; the app now has three sections. */
 export default function Redirect() {
   const router = useRouter();
-  useEffect(() => router.replace("/trips"), [router]);
+  useEffect(() => router.replace("/catches"), [router]);
   return null;
 }

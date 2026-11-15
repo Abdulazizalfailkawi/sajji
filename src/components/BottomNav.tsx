@@ -25,7 +25,7 @@ export function BottomNav() {
   const { mode } = useStore();
   const items = [
     { href: "/", icon: Waves, label: t("البحر", "Sea"), match: (p: string) => p === "/" || SECTION_ROUTES.sea.some((x) => p.startsWith(x)) },
-    { href: "/trips", icon: Fish, label: t("صيدي", "My catches"), match: (p: string) => SECTION_ROUTES.trips.some((x) => p.startsWith(x)) },
+    { href: "/catches", icon: Fish, label: t("صيدي", "My catches"), match: (p: string) => SECTION_ROUTES.trips.some((x) => p.startsWith(x)) },
     null,
     { href: "/account", icon: CircleUserRound, label: mode === "cloud" ? t("حسابي", "Account") : t("تسجيل دخول", "Sign in"), match: (p: string) => SECTION_ROUTES.account.some((x) => p.startsWith(x)) },
   ];

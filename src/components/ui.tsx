@@ -101,7 +101,7 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 
 // ---------------------------------------------------------------------------
 /** The three main tabs have no back button; every other page does. */
-const ROOT_PATHS = ["/", "/trips", "/account"];
+const ROOT_PATHS = ["/", "/catches", "/account"];
 
 /** Back = the previous page; with no history (opened from a link) go home. */
 export function useSmartBack() {

@@ -59,7 +59,7 @@ export default function TripsPage() {
   return (
     <>
       <PageHeader section="trips"
-        title={t("رحلاتي وصيدي", "Trips & catches")}
+        title={t("الرحلات", "Trips")}
         subtitle={t(`${s.trips} رحلة · ${s.catches} سمكة · نجاح ${pct(s.successRate)}`, `${s.trips} trips · ${s.catches} fish · ${pct(s.successRate)} success`)}
         actions={
           active ? (

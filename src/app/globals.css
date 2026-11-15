@@ -134,6 +134,33 @@ body::after {
 .sj-pulse {
   animation: sj-pulse 1.6s ease-in-out infinite;
 }
+@keyframes sj-scan {
+  0% {
+    top: 12%;
+  }
+  50% {
+    top: 84%;
+  }
+  100% {
+    top: 12%;
+  }
+}
+@keyframes sj-up {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.sj-scanline {
+  animation: sj-scan 1.4s ease-in-out infinite;
+}
+.sj-rise {
+  animation: sj-up 0.3s ease;
+}
 .glass {
   background: rgb(10 22 40 / 0.5);
   -webkit-backdrop-filter: blur(14px);
