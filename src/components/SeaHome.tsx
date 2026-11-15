@@ -4,7 +4,8 @@
 // hero card with moving waves and a bobbing boat, the 7-day strip with
 // haml / fasad, and the wind / pressure / cycle tiles.
 
-import { Camera } from "lucide-react";
+import { Camera, ShieldCheck, TriangleAlert } from "lucide-react";
+import type { Light } from "@/config/marine";
 import type { Cycle } from "@/lib/tidecycle";
 import { cn } from "./ui";
 
@@ -46,6 +47,8 @@ export function SeaHero(p: {
   waqfaLabel: string;
   waqfaTime: string;
   waqfaSub: string;
+  /** is the sea suitable for a small boat, from the wind (null = no data) */
+  suit?: { light: Light; label: string; sub: string } | null;
 }) {
   return (
     <section className="glass relative mb-4 overflow-hidden rounded-[26px] px-[18px] pb-[52px] pt-[18px] shadow-[0_14px_30px_rgb(0_0_0/0.28)]">
@@ -65,6 +68,20 @@ export function SeaHero(p: {
           {p.waqfaSub && <div className="mt-1 inline-block rounded-[10px] bg-ocean/15 px-2.5 py-0.5 text-[13px] font-bold text-ocean">{p.waqfaSub}</div>}
         </div>
       </div>
+      {p.suit && (
+        <div
+          className={cn(
+            "relative z-[1] mt-3 flex items-center gap-2 rounded-2xl px-3 py-2",
+            p.suit.light === "green" ? "bg-mint/15 text-mint" : p.suit.light === "yellow" ? "bg-warn/15 text-warn" : "bg-bad/15 text-bad",
+          )}
+        >
+          {p.suit.light === "green" ? <ShieldCheck className="size-5 shrink-0" /> : <TriangleAlert className="size-5 shrink-0" />}
+          <div className="min-w-0 leading-tight">
+            <div className="text-[15px] font-bold">{p.suit.label}</div>
+            <div className="text-xs opacity-90">{p.suit.sub}</div>
+          </div>
+        </div>
+      )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 overflow-hidden" aria-hidden="true">
         <svg width="780" height="60" viewBox="0 0 780 60" className="sj-wave absolute -bottom-2 left-0">
           <path d={WAVE1} fill="#8CC4FF" fillOpacity="0.22" />

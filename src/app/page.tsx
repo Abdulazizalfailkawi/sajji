@@ -35,6 +35,7 @@ import { SaveSpotSheet } from "@/components/SaveSpotSheet";
 import { PushSettings } from "@/components/PushSettings";
 import { kuwaitMidnight } from "@/lib/marine/client";
 import { pressureAt } from "@/lib/pressure";
+import { verdictFor } from "@/lib/verdict";
 
 const H = 3_600_000;
 const STALE_MS = 6 * H;
@@ -206,6 +207,20 @@ export default function MarineHome() {
     d === "rising" ? t("سجي", "Saji · rising") : d === "falling" ? t("ثبر", "Thabr · falling") : d === "waqfa" ? t("وقفة", "Waqfa · slack") : "—";
   const dirColor = (d: string | null) => (d === "rising" ? "text-rise" : d === "falling" ? "text-fall" : "text-warn");
 
+  // suitable for a small boat? worst wind (and gusts) from now for 10 h, or 05:00–19:00 on a later day
+  const verdict = verdictFor(c, viewing ? dayStart + 5 * H : now, viewing ? dayStart + 19 * H : now + 10 * H);
+  const suit = verdict
+    ? {
+        light: verdict.wind ?? verdict.light,
+        label: (verdict.wind ?? verdict.light) === "green" ? t("مناسب للبحر", "Good to go out") : t("غير مناسب للبحر", "Not suitable for the sea"),
+        sub: [
+          verdict.maxWindKmh != null ? t(`رياح حتى ${fmtWind(verdict.maxWindKmh, unit, lang)}`, `Wind up to ${fmtWind(verdict.maxWindKmh, unit, lang)}`) : null,
+          verdict.maxGustKmh != null && (verdict.wind ?? verdict.light) !== "green" ? t(`هبّات ${fmtWind(verdict.maxGustKmh, unit, lang)}`, `gusts ${fmtWind(verdict.maxGustKmh, unit, lang)}`) : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      }
+    : null;
   const cfg = readCycleConfig();
   const spotName = gpsPt ? t("موقعي", "my location") : spot ? (lang === "ar" ? spot.name : spot.name_en || spot.name) : "";
   const hourNow = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kuwait", hour: "numeric", hourCycle: "h23" }).format(new Date(now)));
@@ -357,6 +372,7 @@ export default function MarineHome() {
             cycleLabel={lang === "ar" ? dayCyc.ar : dayCyc.en}
             waqfaLabel={viewing ? t("أول وقفة", "First slack") : inWaqfa ? t("تنتهي الوقفة", "Slack ends") : t("الوقفة الجاية", "Next slack")}
             waqfaTime={waqfaAt ? fmtTime(waqfaAt, lang) : "—"}
+            suit={suit}
             waqfaSub={viewing ? (nextTurn ? (nextTurn.type === "high" ? t("أعلى مد", "High tide") : t("أدنى جزر", "Low tide")) : "") : waqfaAt ? remain(waqfaAt - now, lang) : ""}
           />
 
