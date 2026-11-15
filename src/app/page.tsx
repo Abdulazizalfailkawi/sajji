@@ -292,9 +292,9 @@ export default function MarineHome() {
           <button
             type="button"
             onClick={() => setMarkOpen(true)}
-            className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-ocean/50 bg-ocean/20 px-3 text-sm font-bold text-white backdrop-blur-md"
+            className="glass flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-bold text-ink transition-transform active:scale-95"
           >
-            <MapPinPlus className="size-4 text-ocean" /> {t("علّم هنا", "Mark here")}
+            <MapPinPlus className="size-[18px] text-ocean" /> {t("علّم هنا", "Mark here")}
           </button>
           <button
             aria-label="GPS"
