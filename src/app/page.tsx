@@ -214,8 +214,8 @@ export default function MarineHome() {
         light: verdict.wind ?? verdict.light,
         label: (verdict.wind ?? verdict.light) === "green" ? t("مناسب للبحر", "Good to go out") : t("غير مناسب للبحر", "Not suitable for the sea"),
         sub: [
-          verdict.maxWindKmh != null ? t(`رياح حتى ${fmtWind(verdict.maxWindKmh, unit, lang)}`, `Wind up to ${fmtWind(verdict.maxWindKmh, unit, lang)}`) : null,
-          verdict.maxGustKmh != null && (verdict.wind ?? verdict.light) !== "green" ? t(`هبّات ${fmtWind(verdict.maxGustKmh, unit, lang)}`, `gusts ${fmtWind(verdict.maxGustKmh, unit, lang)}`) : null,
+          verdict.maxWindKmh != null ? fmtWind(verdict.maxWindKmh, unit, lang) : null,
+          verdict.maxGustKmh != null && (verdict.wind ?? verdict.light) !== "green" ? t(`هبّات ${fmtWind(verdict.maxGustKmh, unit, lang).split(" ")[0]}`, `gusts ${fmtWind(verdict.maxGustKmh, unit, lang).split(" ")[0]}`) : null,
         ]
           .filter(Boolean)
           .join(" · "),

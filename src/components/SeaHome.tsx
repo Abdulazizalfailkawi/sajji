@@ -71,15 +71,13 @@ export function SeaHero(p: {
       {p.suit && (
         <div
           className={cn(
-            "relative z-[1] mt-3 flex items-center gap-2 rounded-2xl px-3 py-2",
+            "relative z-[1] mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-full py-1 pe-3 ps-2 text-[13px] font-bold ring-1 ring-current/25",
             p.suit.light === "green" ? "bg-mint/15 text-mint" : p.suit.light === "yellow" ? "bg-warn/15 text-warn" : "bg-bad/15 text-bad",
           )}
         >
-          {p.suit.light === "green" ? <ShieldCheck className="size-5 shrink-0" /> : <TriangleAlert className="size-5 shrink-0" />}
-          <div className="min-w-0 leading-tight">
-            <div className="text-[15px] font-bold">{p.suit.label}</div>
-            <div className="text-xs opacity-90">{p.suit.sub}</div>
-          </div>
+          {p.suit.light === "green" ? <ShieldCheck className="size-4 shrink-0" /> : <TriangleAlert className="size-4 shrink-0" />}
+          <span className="truncate">{p.suit.label}</span>
+          {p.suit.sub && <span className="truncate text-xs font-medium opacity-80">· {p.suit.sub}</span>}
         </div>
       )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 overflow-hidden" aria-hidden="true">
