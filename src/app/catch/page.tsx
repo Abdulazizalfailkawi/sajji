@@ -14,7 +14,6 @@ import { useStore } from "@/lib/db/store";
 import { MOON_LABEL, TIDE_LABEL, label, useI18n } from "@/lib/i18n";
 import { catchDepth, catchLocation, catchTechnique } from "@/lib/stats";
 import { fmtDateTime } from "@/lib/time";
-import { useIsAdmin } from "@/lib/admin";
 import { ShareCatch } from "@/components/ShareCatch";
 
 export default function Page() {
@@ -29,7 +28,6 @@ function CatchDetail() {
   const id = useSearchParams().get("id");
   const { ds, idx, save, remove } = useStore();
   const { t, lang, name } = useI18n();
-  const isAdmin = useIsAdmin();
   const router = useRouter();
   const [del, setDel] = useState(false);
   const [viewer, setViewer] = useState<string | null>(null);
@@ -83,7 +81,7 @@ function CatchDetail() {
         <ShareCatch c={c} />
       </div>
 
-      {isAdmin && !c.species_id && c.photo_media_id && (
+      {!c.species_id && c.photo_media_id && (
         <Card className="mb-3">
           <AiPanel
             photoMediaId={c.photo_media_id}

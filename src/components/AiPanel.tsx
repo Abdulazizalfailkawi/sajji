@@ -60,6 +60,7 @@ export function AiPanel({
           AI_KEY_INVALID: t("مفتاح API غير صالح.", "The API key is invalid."),
           UNAUTHENTICATED: t("سجّل الدخول لاستخدام التعرّف بالذكاء الاصطناعي.", "Sign in to use AI identification."),
           AUTH_NOT_CONFIGURED: t("التعرّف بالذكاء الاصطناعي يتطلب حساباً.", "AI identification requires an account."),
+          RATE_LIMITED: t("وصلت الحد بالساعة (٢٠ صورة) — حاول بعد شوي أو اختر النوع يدوياً.", "Hourly limit reached (20 photos) — try later or pick the species manually."),
           AI_RATE_LIMITED: t("طلبات كثيرة — حاول بعد دقيقة.", "Too many requests — try again in a minute."),
           AI_NO_CREDIT: t("رصيد الذكاء الاصطناعي خلص.", "AI credit has run out."),
           AI_BAD_OUTPUT: t("ما قدر يقرأ الصورة زين — جرّب صورة ثانية أو اختر النوع يدوياً.", "Couldn't read the photo — try another or choose the species manually."),

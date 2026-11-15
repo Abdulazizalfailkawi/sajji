@@ -124,11 +124,18 @@ async function authorize(req: Request): Promise<string | null> {
   const sb = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data, error } = await sb.auth.getUser(token);
   if (error || !data.user) return "UNAUTHENTICATED";
-  // AI identification is limited to the admin account.
-  const admin = (process.env.ADMIN_EMAIL || "alfailkaw33@gmail.com").toLowerCase();
-  if ((data.user.email ?? "").toLowerCase() !== admin) return "FORBIDDEN";
+  // Open to every signed-in user, with a small per-user hourly limit so one
+  // account can't burn through the free model's quota (best-effort, per instance).
+  const now = Date.now();
+  const hits = (usage.get(data.user.id) ?? []).filter((t) => now - t < 3_600_000);
+  if (hits.length >= HOURLY_LIMIT) return "RATE_LIMITED";
+  hits.push(now);
+  usage.set(data.user.id, hits);
   return null;
 }
+
+const HOURLY_LIMIT = 20;
+const usage = new Map<string, number[]>();
 
 export async function GET() {
   return json(200, { configured: Boolean(process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY), model: activeModel() });
@@ -138,7 +145,7 @@ export async function POST(req: Request) {
   if (!process.env.OPENROUTER_API_KEY && !process.env.ANTHROPIC_API_KEY) return json(503, { error: "AI_NOT_CONFIGURED" });
 
   const authError = await authorize(req);
-  if (authError) return json(authError === "FORBIDDEN" ? 403 : 401, { error: authError });
+  if (authError) return json(authError === "RATE_LIMITED" ? 429 : 401, { error: authError });
 
   let body: z.infer<typeof RequestSchema>;
   try {

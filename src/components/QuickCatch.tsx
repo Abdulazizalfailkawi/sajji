@@ -1,7 +1,7 @@
 "use client";
 
 // سجّل صيدة — one flow from the camera button: photo (or album) → AI names the
-// fish (admin only for now; everyone else picks it) → confirm: fish, the sea
+// fish (signed-in users) → confirm: fish, the sea
 // conditions filled in for you, method, place → saved into صيدي.
 // `QuickCatchSheet` is also used from a trip page to add a fish to that trip.
 
@@ -9,7 +9,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Loader2, LocateFixed, Sparkles, X } from "lucide-react";
 import { AiError, aiConfigured, identifyFish } from "@/lib/ai";
-import { useIsAdmin } from "@/lib/admin";
 import { findSpeciesByName } from "@/lib/commonFish";
 import { useStore } from "@/lib/db/store";
 import { newCatch } from "@/lib/factory";
@@ -46,7 +45,6 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
   const { ds, idx, save, addPhoto, online, hijriOffset } = store;
   const { t, lang, name } = useI18n();
   const toast = useToast();
-  const isAdmin = useIsAdmin();
   const cam = useRef<HTMLInputElement>(null);
   const lib = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>("pick");
@@ -168,7 +166,7 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
       const m = await addPhoto(f);
       setPhoto(m.id);
       setNow(Date.now());
-      const enabled = isAdmin && online && (await aiConfigured());
+      const enabled = online && (await aiConfigured());
       if (enabled) await runAi(m);
       else setStep("result");
     } catch {
@@ -254,7 +252,7 @@ export function QuickCatchSheet({ open, onClose, fixedTripId }: { open: boolean;
                 {t("من الألبوم", "From album")}
               </button>
             </div>
-            {isAdmin && <p className="text-center text-xs text-mint">{t("الذكاء الاصطناعي يتعرّف على السمكة بعد التصوير", "AI names the fish after the photo")}</p>}
+            {<p className="text-center text-xs text-mint">{t("الذكاء الاصطناعي يتعرّف على السمكة بعد التصوير", "AI names the fish after the photo")}</p>}
             {err && <Notice tone="bad">{err}</Notice>}
             <button type="button" onClick={() => setStep("result")} className="block w-full py-2 text-center text-sm font-semibold text-ocean">
               {t("سجّلها بدون صورة", "Log it without a photo")}
