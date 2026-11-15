@@ -4,7 +4,7 @@
 // Touch targets are at least 44px tall (Apple HIG).
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
@@ -100,6 +100,30 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 }
 
 // ---------------------------------------------------------------------------
+/** The three main tabs have no back button; every other page does. */
+const ROOT_PATHS = ["/", "/trips", "/account"];
+
+/** Back = the previous page; with no history (opened from a link) go home. */
+export function useSmartBack() {
+  const router = useRouter();
+  return () => {
+    if (typeof window !== "undefined" && window.history.length > 1) router.back();
+    else router.push("/");
+  };
+}
+
+/** Round back button. Mirrors the arrow in RTL. */
+export function BackButton({ className }: { className?: string }) {
+  const { dir, t } = useI18n();
+  const goBack = useSmartBack();
+  const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
+  return (
+    <button type="button" aria-label={t("رجوع", "Back")} onClick={goBack} className={cn("grid size-11 shrink-0 place-items-center rounded-full text-ink-2 hover:bg-surface-2", className)}>
+      <BackIcon className="size-6" />
+    </button>
+  );
+}
+
 export function PageHeader({
   title,
   subtitle,
@@ -109,21 +133,25 @@ export function PageHeader({
 }: {
   title: ReactNode;
   subtitle?: ReactNode;
-  back?: string | true;
+  /** a path = go there; true/undefined = previous page (automatic except on the main tabs); false = none */
+  back?: string | boolean;
   actions?: ReactNode;
   /** show the secondary tabs of a primary section under the title */
   section?: "trips" | "stats";
 }) {
+  const path = usePathname();
   const router = useRouter();
-  const { dir } = useI18n();
+  const goBack = useSmartBack();
+  const { dir, t } = useI18n();
   const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
+  const showBack = back === undefined ? !ROOT_PATHS.includes(path) : back !== false;
   return (
     <header className="no-print sticky top-0 z-30 -mx-4 mb-3 border-b border-line/40 bg-navy/85 px-4 pb-3 pt-[calc(var(--safe-top)+0.75rem)] backdrop-blur-xl">
       <div className="flex min-h-11 items-center gap-2">
-        {back && (
+        {showBack && (
           <button
-            aria-label="back"
-            onClick={() => (typeof back === "string" ? router.push(back) : router.back())}
+            aria-label={t("رجوع", "Back")}
+            onClick={() => (typeof back === "string" ? router.push(back) : goBack())}
             className="-ms-2 grid size-11 place-items-center rounded-full text-ink-2 hover:bg-surface-2"
           >
             <BackIcon className="size-6" />

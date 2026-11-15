@@ -9,7 +9,7 @@ import "leaflet/dist/leaflet.css";
 import type { Map as LMap, LayerGroup } from "leaflet";
 import { useStore } from "@/lib/db/store";
 import { useI18n } from "@/lib/i18n";
-import { Card, Spinner, cn } from "@/components/ui";
+import { BackButton, Card, Spinner, cn } from "@/components/ui";
 import { getConditions } from "@/lib/marine/client";
 import { PRESET_SPOTS } from "@/lib/marine/presets";
 import { fmtWave, fmtWind, compass, readWindUnit, type WindUnit } from "@/lib/marine/units";
@@ -172,7 +172,10 @@ export default function MapPage() {
 
   return (
     <div className="space-y-3 pb-4 pt-[calc(var(--safe-top)+0.75rem)]">
-      <h1 className="text-xl font-bold">{t("الخريطة", "Map")}</h1>
+      <div className="flex items-center gap-1">
+        <BackButton className="-ms-2" />
+        <h1 className="text-xl font-bold">{t("الخريطة", "Map")}</h1>
+      </div>
       <div className="flex flex-wrap gap-2">
         {chip("spots", t("📍 المواقع", "📍 Spots"))}
         {chip("catches", t("🐟 صيدي", "🐟 My catches"))}
