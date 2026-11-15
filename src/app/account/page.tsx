@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { BadgeCheck, BarChart3, Camera, CircleUserRound, Cloud, LogIn, LogOut, Map as MapIcon, Settings, Smartphone, Trash2, Users } from "lucide-react";
+import { BadgeCheck, BarChart3, Camera, CircleUserRound, Cloud, KeyRound, LogIn, LogOut, Map as MapIcon, Settings, Smartphone, Trash2, Users } from "lucide-react";
 import { Photo } from "@/components/common";
 import { useToast } from "@/components/Toast";
 import { Badge, Button, Card, Field, Input, LinkButton, Notice, PageHeader, Textarea } from "@/components/ui";
@@ -180,6 +180,9 @@ export default function AccountPage() {
       <div className="mt-3 space-y-2">
         <Link href="/settings" className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm font-medium">
           <Settings className="size-5 text-ocean" /> {t("الإعدادات", "Settings")}
+        </Link>
+        <Link href="/reset-password" className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm font-medium">
+          <KeyRound className="size-5 text-ocean" /> {t("تغيير كلمة المرور", "Change password")}
         </Link>
         <button
           type="button"

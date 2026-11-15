@@ -17,6 +17,25 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ tone: "info" | "bad"; text: string } | null>(null);
 
+  // «نسيت كلمة المرور؟» — the same neutral answer whether or not the e-mail has an account.
+  const forgot = async () => {
+    const sb = supabase();
+    if (!sb) return;
+    setMsg(null);
+    if (!/^\S+@\S+\.\S+$/.test(email)) return setMsg({ tone: "bad", text: t("اكتب بريدك أول، وبعدها اضغط «نسيت كلمة المرور؟»", "Type your email first, then tap “Forgot password?”") });
+    setBusy(true);
+    try {
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+      if (error && /rate limit|too many|security purposes/i.test(error.message)) throw error;
+      setMsg({ tone: "info", text: t("إذا البريد مسجّل عندنا، وصلتك رسالة فيها رابط لتغيير كلمة المرور. تأكد من البريد المزعج.", "If that email has an account, we've sent a link to reset your password. Check your spam folder too.") });
+    } catch (err) {
+      const m = String((err as Error).message ?? err);
+      setMsg({ tone: "bad", text: /rate limit|too many|security purposes/i.test(m) ? t("طلبات كثيرة — حاول بعد دقائق", "Too many requests — try again in a few minutes") : /fetch|network/i.test(m) ? t("لا يوجد اتصال بالإنترنت", "No internet connection") : m });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const sb = supabase();
@@ -106,6 +125,11 @@ export default function LoginPage() {
             <Button type="submit" size="lg" className="w-full" loading={busy}>
               {tab === "in" ? t("دخول", "Sign in") : t("إنشاء الحساب", "Create account")}
             </Button>
+            {tab === "in" && (
+              <button type="button" onClick={forgot} disabled={busy} className="block w-full py-1 text-center text-sm font-semibold text-ocean underline-offset-4 hover:underline disabled:opacity-50">
+                {t("نسيت كلمة المرور؟", "Forgot password?")}
+              </button>
+            )}
           </form>
           <p className="mt-3 text-xs leading-relaxed text-muted">
             {t(

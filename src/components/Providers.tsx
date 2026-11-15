@@ -25,7 +25,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 }
 
-const PUBLIC = ["/login"];
+const PUBLIC = ["/login", "/reset-password"];
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { ready, mode } = useStore();
