@@ -55,7 +55,8 @@ body {
 /* Background: the bridge photo — a heavily blurred copy fills the screen, the
    sharp photo sits on top (fading out at its bottom), then a navy veil keeps
    text readable. All layers sit behind everything. */
-body::before {
+body::before,
+.sj-bg-blur {
   content: "";
   position: fixed;
   inset: -48px;
@@ -64,7 +65,8 @@ body::before {
   background: #0b1626 url("/bg/bridge.jpg") center bottom / cover no-repeat;
   filter: blur(26px) saturate(1.2) brightness(0.55);
 }
-body::after {
+body::after,
+.sj-bg-sharp {
   content: "";
   position: fixed;
   top: 0;

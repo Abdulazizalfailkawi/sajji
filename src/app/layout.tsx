@@ -36,6 +36,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl" className={plex.variable} suppressHydrationWarning>
+      <head>
+        <link rel="preload" as="image" href="/bg/bridge.jpg" />
+      </head>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
       </body>

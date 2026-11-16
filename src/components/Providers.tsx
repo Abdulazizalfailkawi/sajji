@@ -34,7 +34,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
 const PUBLIC = ["/login", "/reset-password"];
 const SPLASH_MS = 3000;
-
 function Shell({ children }: { children: React.ReactNode }) {
   const { ready, mode } = useStore();
   const path = usePathname();
@@ -99,7 +98,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       setSplashMounted(true);
       return;
     }
-    const id = setTimeout(() => setSplashMounted(false), 800);
+    const id = setTimeout(() => setSplashMounted(false), 1100);
     return () => clearTimeout(id);
   }, [wantSplash]);
 
@@ -107,15 +106,17 @@ function Shell({ children }: { children: React.ReactNode }) {
     <>
       {splashMounted && (
         <div
-          className={`fixed inset-0 z-[100] transition-opacity duration-700 ease-in-out ${wantSplash ? "opacity-100" : "pointer-events-none opacity-0"}`}
+          style={{ background: "#0b1626" }}
+          className={`fixed inset-0 z-[100] transition-opacity duration-1000 ease-in-out ${wantSplash ? "opacity-100" : "pointer-events-none opacity-0"}`}
         >
+          {/* same photo layers as the page background, so the fade-out is seamless */}
+          <div className="sj-bg-blur" aria-hidden="true" />
+          <div className="sj-bg-sharp" aria-hidden="true" />
           <Splash />
         </div>
       )}
       {!blocked && (
-        <div
-          className={`transition-opacity duration-700 ease-in-out ${wantSplash ? "pointer-events-none opacity-0" : "opacity-100"}`}
-        >
+        <>
           <main className="mx-auto w-full max-w-3xl px-4 pb-[calc(var(--safe-bottom)+6.5rem)]">
             {children}
           </main>
@@ -129,7 +130,7 @@ function Shell({ children }: { children: React.ReactNode }) {
               <SnapshotFiller />
             </>
           )}
-        </div>
+        </>
       )}
     </>
   );

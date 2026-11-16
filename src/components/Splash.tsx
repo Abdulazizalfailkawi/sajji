@@ -60,7 +60,7 @@ export function Splash() {
           <div className="sj-load h-full w-1/3 rounded-full bg-gradient-to-l from-mint to-ocean" />
         </div>
 
-        <div className="mt-6 w-[19rem] max-w-full rounded-[22px] border border-white/15 bg-[#0b1626]/80 px-4 py-4 shadow-[0_10px_30px_rgb(0_0_0/0.35)] backdrop-blur-md">
+        <div className="mt-6 w-[19rem] max-w-full rounded-[22px] border border-white/15 bg-[#0b1626]/85 px-4 py-4 shadow-[0_10px_30px_rgb(0_0_0/0.35)]">
           <p key={tip} className="sj-rise min-h-12 text-base font-semibold leading-relaxed text-white">
             {TIPS[tip]}
           </p>
