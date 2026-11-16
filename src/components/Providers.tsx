@@ -9,6 +9,7 @@ import { backfillPressureCatch, backfillPressureTrip, catchesNeedingSnapshot, re
 import { tripRows } from "@/lib/stats";
 import { BottomNav } from "./BottomNav";
 import { QuickCatch } from "./QuickCatch";
+import { Splash } from "./Splash";
 import { ToastProvider } from "./Toast";
 import { UpdatePrompt } from "./UpdatePrompt";
 import { Welcome } from "./Welcome";
@@ -61,14 +62,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (!ready || (!mode && !isPublic)) {
-    return (
-      <div className="grid min-h-dvh place-items-center">
-        <div className="flex flex-col items-center gap-3 text-muted">
-          <img src="/icons/sajji-mark.svg" alt="" className="size-24" />
-          <div className="text-sm">…</div>
-        </div>
-      </div>
-    );
+    return <Splash />;
   }
 
   return (
