@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { evaluateAchievements } from "@/lib/achievements";
 import { StoreProvider, useStore } from "@/lib/db/store";
 import { I18nProvider } from "@/lib/i18n";
@@ -27,12 +27,34 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 
 const PUBLIC = ["/login", "/reset-password"];
+const SPLASH_MS = 3000;
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { ready, mode } = useStore();
   const path = usePathname();
   const router = useRouter();
   const isPublic = PUBLIC.includes(path);
+
+  // Keep the loading screen up for ~3 s on each app launch so it can actually be
+  // seen; later page loads in the same session skip the wait.
+  const [held, setHeld] = useState(true);
+  useEffect(() => {
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("sj.splash") === "1";
+    } catch {}
+    if (seen) {
+      setHeld(false);
+      return;
+    }
+    const id = setTimeout(() => {
+      try {
+        sessionStorage.setItem("sj.splash", "1");
+      } catch {}
+      setHeld(false);
+    }, SPLASH_MS);
+    return () => clearTimeout(id);
+  }, []);
 
   useEffect(() => {
     if (ready && !mode && !isPublic) router.replace("/login");
@@ -61,7 +83,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  if (!ready || (!mode && !isPublic)) {
+  if (held || !ready || (!mode && !isPublic)) {
     return <Splash />;
   }
 
