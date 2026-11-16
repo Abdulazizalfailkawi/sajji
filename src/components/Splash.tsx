@@ -42,7 +42,7 @@ export function Splash() {
       role="status"
       aria-live="polite"
       aria-label="جاري التحميل"
-      className="sj-fade relative grid min-h-dvh select-none place-items-center overflow-hidden"
+      className="sj-fade relative grid h-full select-none touch-none place-items-center overflow-hidden"
     >
       {ripples.map((r) => (
         <span key={r.id} className="sj-ripple pointer-events-none fixed size-6 rounded-full border border-ocean/60" style={{ left: r.x - 12, top: r.y - 12 }} />

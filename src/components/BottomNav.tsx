@@ -30,7 +30,7 @@ export function BottomNav() {
     { href: "/account", icon: CircleUserRound, label: mode === "cloud" ? t("حسابي", "Account") : t("تسجيل دخول", "Sign in"), match: (p: string) => SECTION_ROUTES.account.some((x) => p.startsWith(x)) },
   ];
   return (
-    <nav className="no-print fixed inset-x-3 bottom-[calc(var(--safe-bottom)+0.75rem)] z-40 mx-auto max-w-md">
+    <nav className="no-print fixed inset-x-3 bottom-[max(0.25rem,calc(var(--safe-bottom)-0.5rem))] z-40 mx-auto max-w-md">
       <ul className="glass grid h-[68px] grid-cols-[1fr_1fr_88px_1fr] items-stretch rounded-[26px] shadow-[0_12px_30px_rgb(0_0_0/0.4)]">
         {items.map((it, i) => {
           if (!it)

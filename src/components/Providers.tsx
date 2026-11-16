@@ -93,6 +93,13 @@ function Shell({ children }: { children: React.ReactNode }) {
 
   // Splash fades out (and the app fades in) instead of switching abruptly.
   const [splashMounted, setSplashMounted] = useState(true);
+  // While the splash is up, nothing behind it may scroll or rubber-band: that
+  // movement is what made the bottom of the screen "jump" at launch.
+  useEffect(() => {
+    document.documentElement.classList.toggle("sj-lock", splashMounted);
+    return () => document.documentElement.classList.remove("sj-lock");
+  }, [splashMounted]);
+
   useEffect(() => {
     if (wantSplash) {
       setSplashMounted(true);
@@ -117,7 +124,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       )}
       {!blocked && (
         <>
-          <main className="mx-auto w-full max-w-3xl px-4 pb-[calc(var(--safe-bottom)+6.5rem)]">
+          <main className="mx-auto w-full max-w-3xl px-4 pb-[calc(var(--safe-bottom)+6rem)]">
             {children}
           </main>
           {mode && !isPublic && (

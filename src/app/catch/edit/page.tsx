@@ -435,7 +435,7 @@ function CatchEdit() {
         </details>
       </div>
 
-      <div className="sticky bottom-[calc(var(--safe-bottom)+5.75rem)] z-20 mt-4 flex gap-2 rounded-2xl border border-line bg-navy/95 p-2 backdrop-blur">
+      <div className="sticky bottom-[calc(var(--safe-bottom)+5.25rem)] z-20 mt-4 flex gap-2 rounded-2xl border border-line bg-navy/95 p-2 backdrop-blur">
         <Button size="lg" className="flex-1" loading={saving} onClick={() => doSave(false)}>
           <Save className="size-5" /> {t("حفظ", "Save")}
         </Button>

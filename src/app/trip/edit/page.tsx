@@ -386,7 +386,7 @@ function TripEdit() {
         </Notice>
       )}
 
-      <div className="sticky bottom-[calc(var(--safe-bottom)+5rem)] z-20 mt-4 rounded-2xl border border-line bg-navy/95 p-2 backdrop-blur">
+      <div className="sticky bottom-[calc(var(--safe-bottom)+4.5rem)] z-20 mt-4 rounded-2xl border border-line bg-navy/95 p-2 backdrop-blur">
         <Button size="lg" className={cn("w-full", effMode === "start" && !existing && "bg-teal text-abyss hover:bg-teal-dim")} loading={saving} disabled={!!blockedByActive} onClick={onSave}>
           {existing ? (
             <>

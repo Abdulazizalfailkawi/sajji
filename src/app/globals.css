@@ -164,6 +164,12 @@ body::after,
   animation: sj-up 0.3s ease;
 }
 /* Loading screen */
+html.sj-lock,
+html.sj-lock body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  height: 100%;
+}
 @keyframes sj-breathe {
   0%,
   100% {
