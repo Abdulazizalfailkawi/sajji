@@ -5,7 +5,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { evaluateAchievements } from "@/lib/achievements";
 import { StoreProvider, useStore } from "@/lib/db/store";
 import { I18nProvider } from "@/lib/i18n";
-import { backfillPressureCatch, backfillPressureTrip, catchesNeedingSnapshot, recordsNeedingPressure, snapshotCatch } from "@/lib/marine/snapshots";
+import {
+  backfillPressureCatch,
+  backfillPressureTrip,
+  catchesNeedingSnapshot,
+  recordsNeedingPressure,
+  snapshotCatch,
+} from "@/lib/marine/snapshots";
 import { tripRows } from "@/lib/stats";
 import { BottomNav } from "./BottomNav";
 import { QuickCatch } from "./QuickCatch";
@@ -83,22 +89,47 @@ function Shell({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  if (held || !ready || (!mode && !isPublic)) {
-    return <Splash />;
-  }
+  const blocked = !ready || (!mode && !isPublic);
+  const wantSplash = held || blocked;
+
+  // Splash fades out (and the app fades in) instead of switching abruptly.
+  const [splashMounted, setSplashMounted] = useState(true);
+  useEffect(() => {
+    if (wantSplash) {
+      setSplashMounted(true);
+      return;
+    }
+    const id = setTimeout(() => setSplashMounted(false), 800);
+    return () => clearTimeout(id);
+  }, [wantSplash]);
 
   return (
     <>
-      <main className="mx-auto w-full max-w-3xl px-4 pb-[calc(var(--safe-bottom)+6.5rem)]">{children}</main>
-      {mode && !isPublic && (
-        <>
-          <BottomNav />
-          <QuickCatch />
-          <UpdatePrompt />
-          <Welcome />
-          <AchievementRecorder />
-          <SnapshotFiller />
-        </>
+      {splashMounted && (
+        <div
+          className={`fixed inset-0 z-[100] transition-opacity duration-700 ease-in-out ${wantSplash ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        >
+          <Splash />
+        </div>
+      )}
+      {!blocked && (
+        <div
+          className={`transition-opacity duration-700 ease-in-out ${wantSplash ? "pointer-events-none opacity-0" : "opacity-100"}`}
+        >
+          <main className="mx-auto w-full max-w-3xl px-4 pb-[calc(var(--safe-bottom)+6.5rem)]">
+            {children}
+          </main>
+          {mode && !isPublic && (
+            <>
+              <BottomNav />
+              <QuickCatch />
+              <UpdatePrompt />
+              <Welcome />
+              <AchievementRecorder />
+              <SnapshotFiller />
+            </>
+          )}
+        </div>
       )}
     </>
   );
@@ -122,8 +153,10 @@ function SnapshotFiller() {
         for (const c of todo) await snapshotCatch(ref.current, c);
         // pressure for older records (a few per minute, newest first)
         const need = recordsNeedingPressure(ref.current.ds);
-        for (const c of need.catches.slice(0, 2)) await backfillPressureCatch(ref.current, c);
-        for (const x of need.trips.slice(0, 2)) await backfillPressureTrip(ref.current, x);
+        for (const c of need.catches.slice(0, 2))
+          await backfillPressureCatch(ref.current, c);
+        for (const x of need.trips.slice(0, 2))
+          await backfillPressureTrip(ref.current, x);
       } finally {
         busy = false;
       }
@@ -148,7 +181,9 @@ function AchievementRecorder() {
   useEffect(() => {
     if (busy.current) return;
     const known = new Set(ds.user_achievements.map((a) => a.achievement_code));
-    const fresh = evaluateAchievements(ds, idx, rows).filter((s) => s.unlocked && s.unlockedAt && !known.has(s.def.code));
+    const fresh = evaluateAchievements(ds, idx, rows).filter(
+      (s) => s.unlocked && s.unlockedAt && !known.has(s.def.code),
+    );
     if (!fresh.length) return;
     busy.current = true;
     const t = setTimeout(() => {
